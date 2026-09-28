@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#081114"/><stop offset="1" stop-color="#0d1a20"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.45" cy="0.5" r="0.85">
+      <stop offset="0" stop-color="#4ec9d4" stop-opacity="0.26"/>
+      <stop offset="0.55" stop-color="#4ec9d4" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#4ec9d4" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="gr"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0"/></filter>
+    <radialGradient id="vig" cx="0.5" cy="0.5" r="0.75">
+      <stop offset="0.6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.55"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <rect width="1600" height="1000" fill="url(#glow)"/>
+  <g fill="#4ec9d4">
+    <circle cx="420" cy="560" r="11" opacity="0.8"/><circle cx="470" cy="600" r="8" opacity="0.6"/>
+    <circle cx="390" cy="620" r="7" opacity="0.55"/><circle cx="490" cy="540" r="6" opacity="0.5"/>
+    <circle cx="445" cy="505" r="9" opacity="0.65"/><circle cx="360" cy="560" r="6" opacity="0.45"/>
+    <circle cx="760" cy="380" r="10" opacity="0.7"/><circle cx="810" cy="420" r="7" opacity="0.55"/>
+    <circle cx="730" cy="330" r="8" opacity="0.6"/><circle cx="840" cy="350" r="6" opacity="0.5"/>
+    <circle cx="785" cy="300" r="6" opacity="0.45"/><circle cx="705" cy="410" r="6" opacity="0.45"/>
+    <circle cx="990" cy="640" r="9" opacity="0.7"/><circle cx="1040" cy="600" r="7" opacity="0.55"/>
+    <circle cx="960" cy="590" r="8" opacity="0.6"/><circle cx="1075" cy="665" r="6" opacity="0.5"/>
+    <circle cx="1010" cy="700" r="6" opacity="0.45"/><circle cx="935" cy="680" r="6" opacity="0.4"/>
+  </g>
+  <g fill="#8ab4f8">
+    <circle cx="480" cy="575" r="5" opacity="0.5"/><circle cx="800" cy="385" r="5" opacity="0.5"/>
+    <circle cx="1010" cy="620" r="5" opacity="0.5"/>
+  </g>
+  <circle cx="425" cy="565" r="70" fill="none" stroke="#4ec9d4" stroke-opacity="0.25" stroke-width="2" stroke-dasharray="3 10"/>
+  <circle cx="775" cy="375" r="62" fill="none" stroke="#8ab4f8" stroke-opacity="0.22" stroke-width="2" stroke-dasharray="3 10"/>
+  <circle cx="1000" cy="640" r="66" fill="none" stroke="#81c995" stroke-opacity="0.22" stroke-width="2" stroke-dasharray="3 10"/>
+  <text x="1060" y="680" font-family="Arial, Helvetica, sans-serif" font-size="560" font-weight="700" fill="#ffffff" opacity="0.07">S</text>
+  <rect width="1600" height="1000" filter="url(#gr)" opacity="0.5"/>
+  <rect width="1600" height="1000" fill="url(#vig)"/>
+</svg>

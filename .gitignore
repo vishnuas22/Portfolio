@@ -1,0 +1,104 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Next.js
+.next/
+out/
+build
+dist
+
+# Production
+*.tsbuildinfo
+next-env.d.ts
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Database
+*.db
+*.db-journal
+
+# Uploads
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Logs
+dev.log
+server.log
+
+# Skills (internal tooling)
+skills/
+tool-results/
+
+# Rollback safety: local snapshot tars + run artifacts (never commit)
+backups/
+.auto-backup.pid
+e2e-baseline.log
+e2e-final.log
+
+# Live SQLite WAL state + transitional merge copies (never commit)
+db/custom.db-wal
+db/custom.db-shm
+db/custom.db.pre-merge*
+# DB recovery snapshots ship via the delivery zip, not git (21MB binaries —
+# keep checkpoints small; live file + these on-disk copies + zip = triple cover)
+db/custom.db.backup-*
+db/custom.db.snapshot-*
+
+# Delivery archives — NEVER commit: zip embeds .git; committing it back creates
+# exponential self-nesting bloat on every re-export. Rebuild via scripts/make-project-zip.sh
+# Broad rule (2026-09-19): ANY zip in download/ is a delivery artifact, never
+# source of truth — the platform auto-checkpoint had committed 35.5MB of real
+
+
+# Ops runtime artifacts (30-day P0 slate)
+monitor/
+logs/
+backups/
+prod.log
+server.log
+*.pid
+restore-drill-*.db
+pre-restore-*.db
+
+# Export verification scratch (verify-export-zip.sh working dir)
+.tmp/
+
+# Redis built from source (rebuildable: see worklog etag-redis-20260906 + scripts/redis-daemon.sh)
+tools/redis-7.4.2/
+tools/redis-7.4.2.tar.gz
+tools/redis-data/
+
+# Local Postgres (userspace build — same pattern as redis-daemon.sh; see
+# scripts/pg-daemon.sh). Binaries + data + source are all rebuildable/wipeable.
+tools/pgsql/
+tools/pgdata/
+tools/postgresql-*/

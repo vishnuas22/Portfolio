@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vishnu AS — AI/ML Engineer</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Google Sans typography (self-hosted, latin subset) -->
+  <link rel="preload" href="/fonts/GoogleSans-700.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/GoogleSansText-400.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/fonts/fonts.css" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body>
+  <!-- Fixed Cinematic Background Canvas -->
+  <canvas id="canvas"></canvas>
+
+  <!-- Top Letterbox Margin: Google-Tier Navigation (lives inside the baked black bar) -->
+  <header class="top-nav-bar">
+    <div class="nav-brand">
+      <a href="#hero" class="brand-link">
+        <span class="brand-dot"></span>
+        <span class="brand-name">Vishnu AS</span>
+        <span class="brand-tag">AI/ML</span>
+      </a>
+    </div>
+
+    <!-- Clean Navigation Pills -->
+    <nav class="nav-pill-group">
+      <button class="nav-item-pill active" data-target="0.08">Systems</button>
+      <button class="nav-item-pill" data-target="0.32">Technical Expertise</button>
+      <button class="nav-item-pill" data-target="0.49">Projects</button>
+      <button class="nav-item-pill" data-target="0.915">Experience</button>
+      <button class="nav-item-pill" data-target="0.955">Knowledge</button>
+      <button class="nav-item-pill" data-target="0.985">Contact</button>
+    </nav>
+
+    <div class="nav-status">
+      <span class="status-dot"></span>
+      <span class="status-label">Available for Roles</span>
+    </div>
+  </header>
+
+  <!-- Hero Landing Section (Act 0) -->
+  <section id="hero" class="hero-section">
+    <img id="hero-img" src="/hero/hero_landing.jpg" alt="Vishnu AS - AI/ML Engineer" class="hero-img"
+      onerror="if(this.src.endsWith('.jpg')) this.src='/hero/hero_landing.png';" />
+
+    <div class="hero-scroll-cue">
+      <span class="cue-text">Scroll to explore</span>
+      <div class="cue-pill-icon">
+        <div class="cue-pill-dot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Virtual Scroll Track (650vh) -->
+  <div id="scroll-wrapper"></div>
+
+  <!-- NARRATIVE STAGES LAYER (constrained to the film safe area) -->
+  <div id="narrative-stages" class="narrative-stages-container">
+
+    <!-- ====================================================================
+         ACT 1: DISTRIBUTED SYSTEMS (borderless editorial layout)
+         ==================================================================== -->
+    <div id="stage-act1" class="stage-view stage-systems">
+      <div class="systems-content">
+        <div class="eyebrow-pill">
+          <span class="eyebrow-dot"></span>
+          <span>Core Engineering Focus</span>
+        </div>
+
+        <h1 class="headline-display">
+          Autonomous Cognition<br />
+          <span class="gradient-text">At Enterprise Scale.</span>
+        </h1>
+
+        <p class="body-description">
+          Designing the computational backbone for modern AI systems. Specializing in high-throughput LLM serving,
+          custom GPU acceleration, and robust agentic architectures.
+        </p>
+
+        <!-- Metric badges without boxy borders -->
+        <div class="metrics-row">
+          <div class="metric-pill">
+            <span class="metric-val">4.2×</span>
+            <span class="metric-txt">Inference Speedup</span>
+          </div>
+          <div class="metric-pill">
+            <span class="metric-val">&lt; 15ms</span>
+            <span class="metric-txt">P99 Latency</span>
+          </div>
+          <div class="metric-pill">
+            <span class="metric-val">100B+</span>
+            <span class="metric-txt">Params Trained</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         ACT 2: GAMIFIED TECHNICAL EXPERTISE — REAL-BRAND ICON PHYSICS POOL
+         ==================================================================== -->
+    <div id="stage-act2" class="stage-view stage-expertise">
+      <div class="expertise-top">
+        <div class="expertise-heading">
+          <div class="eyebrow-pill gold">
+            <span class="eyebrow-dot gold"></span>
+            <span>Interactive Sandbox</span>
+          </div>
+          <h2 class="expertise-title">Technical <span class="g-gradient-text">Expertise</span></h2>
+          <p class="expertise-sub">Real brand icons, real physics. <span class="expertise-hint">Grab one to fling it — tap one to master it.</span></p>
+        </div>
+
+        <!-- Mastery HUD: exploration ring, Google-Fit style -->
+        <div class="xp-hud" title="Skills you've picked up at least once">
+          <svg class="xp-ring" width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
+            <circle class="xp-ring-track" cx="23" cy="23" r="18"></circle>
+            <circle id="xp-ring-fill" class="xp-ring-fill" cx="23" cy="23" r="18"></circle>
+          </svg>
+          <div class="xp-text">
+            <span class="xp-num"><span id="xp-count">0</span><span class="xp-total">/ <span id="xp-total">30</span></span></span>
+            <span class="xp-label">Explored</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category constellation chips + physics controls -->
+      <div class="category-filters-container">
+        <button class="filter-chip active" data-category="all">
+          <span class="chip-sparkle">✦</span>
+          <span>All Technologies</span>
+        </button>
+        <button class="filter-chip" data-category="ai-llm">
+          <span class="chip-color-dot dot-blue"></span>
+          <span>AI &amp; LLM</span>
+          <span class="chip-progress" data-progress-for="ai-llm">0/7</span>
+        </button>
+        <button class="filter-chip" data-category="frameworks">
+          <span class="chip-color-dot dot-purple"></span>
+          <span>Agent Frameworks</span>
+          <span class="chip-progress" data-progress-for="frameworks">0/6</span>
+        </button>
+        <button class="filter-chip" data-category="ml-dl">
+          <span class="chip-color-dot dot-amber"></span>
+          <span>ML &amp; DL</span>
+          <span class="chip-progress" data-progress-for="ml-dl">0/6</span>
+        </button>
+        <button class="filter-chip" data-category="cloud-infra">
+          <span class="chip-color-dot dot-green"></span>
+          <span>Cloud &amp; Deploy</span>
+          <span class="chip-progress" data-progress-for="cloud-infra">0/6</span>
+        </button>
+        <button class="filter-chip" data-category="backend">
+          <span class="chip-color-dot dot-red"></span>
+          <span>App &amp; Backend</span>
+          <span class="chip-progress" data-progress-for="backend">0/6</span>
+        </button>
+
+        <!-- Physics Action Controls -->
+        <div class="physics-toggles">
+          <button id="gravity-toggle-btn" class="action-toggle-pill" title="Toggle Zero Gravity / Earth Gravity">
+            <span id="gravity-icon">🪐</span>
+            <span id="gravity-label">Zero-G</span>
+          </button>
+          <button id="reset-physics-btn" class="action-toggle-pill" title="Regroup Skills">
+            <span>↺</span>
+            <span>Regroup</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Gamified Physics Pool (Matter.js bodies + DOM brand-icon beads) -->
+      <div id="physics-playground" class="physics-playground-arena">
+        <!-- Skill beads are injected here by main.js -->
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         ACT 2.5: THE PROJECT REEL (scroll-driven cinematic project gallery)
+         ==================================================================== -->
+    <div id="stage-act2-5" class="stage-view stage-reel">
+      <div class="reel-head">
+        <div class="eyebrow-pill">
+          <span class="eyebrow-dot"></span>
+          <span>Selected Work — The Project Reel</span>
+        </div>
+
+        <div class="reel-controls">
+          <button class="reel-arrow prev" aria-label="Previous project">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+          </button>
+          <div class="reel-dots"></div>
+          <button class="reel-arrow next" aria-label="Next project">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </button>
+          <div class="reel-counter">
+            <span class="reel-counter-cur">01</span>
+            <span class="reel-counter-sep">/</span>
+            <span class="reel-counter-total">06</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="reel-viewport">
+        <div class="reel-track"></div>
+        <div class="reel-progress"><div class="reel-progress-fill"></div></div>
+        <div class="reel-hint">Drag · Scroll · Arrow keys</div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         ACT 3: EXPERIENCE & EDUCATION — THE SERVICE RECORD (borderless,
+         cinematic dossier: spring-staggered timeline, count-up telemetry,
+         magnetic rows, scroll-velocity skew — mirrors Act 4's language)
+         ==================================================================== -->
+    <div id="stage-act3" class="stage-view stage-xp">
+      <div class="xr-frame">
+        <div class="xr-eyebrow-row">
+          <div class="xmit-eyebrow">
+            <span class="xmit-eyebrow-num">03</span>
+            <span class="xmit-eyebrow-rule"></span>
+            <span>Service Record</span>
+          </div>
+          <div class="xmit-status">
+            <span class="xmit-status-dot"></span>
+            <span>Experience &amp; Education</span>
+          </div>
+        </div>
+
+        <div class="xr-grid">
+          <div class="xr-copy">
+            <h2 class="xr-headline" id="xp-headline">
+              <span class="xr-line">The Service</span>
+              <span class="xr-line"><span class="xr-word" style="--wd:0">Record.</span></span>
+            </h2>
+
+            <p class="xr-desc">
+              Professional history and qualifications — mentoring the next wave of AI
+              builders, shipping freelance intelligence, and the degrees that started it all.
+            </p>
+
+            <div class="xr-stats">
+              <div class="xr-stat" data-magnetic style="--sd:0">
+                <span class="xr-stat-val" data-count="30" data-suffix="+">30+</span>
+                <span class="xr-stat-txt">Interns Mentored</span>
+              </div>
+              <div class="xr-stat" data-magnetic style="--sd:1">
+                <span class="xr-stat-val" data-count="100" data-suffix="+">100+</span>
+                <span class="xr-stat-txt">Sessions Delivered</span>
+              </div>
+              <div class="xr-stat" data-magnetic style="--sd:2">
+                <span class="xr-stat-val" data-count="20" data-suffix="%">20%</span>
+                <span class="xr-stat-txt">Faster Pipelines</span>
+              </div>
+              <div class="xr-stat" data-magnetic style="--sd:3">
+                <span class="xr-stat-val" data-count="15" data-suffix="+">15+</span>
+                <span class="xr-stat-txt">Reports Shipped</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="xr-spine">
+            <article class="xr-entry" style="--ed:0">
+              <span class="xr-node"></span>
+              <header class="xr-head">
+                <span class="xr-stamp">May 2026 — Present</span>
+                <span class="xr-tag">Current</span>
+              </header>
+              <h3 class="xr-role">Data Science / AI Mentor</h3>
+              <p class="xr-org">Futurix · Cochin</p>
+              <ul class="xr-bullets">
+                <li style="--bd:0">Mentored 30+ interns through AI pipelines, real-world datasets, and collaborative code &amp; project reviews.</li>
+                <li style="--bd:1">Delivered 100+ training sessions across Machine Learning, Deep Learning, Generative AI, and SQL.</li>
+                <li style="--bd:2">Ran technical interviews, competitive analysis, rapid prototyping &amp; design QA across the lifecycle.</li>
+              </ul>
+            </article>
+
+            <article class="xr-entry" style="--ed:1">
+              <span class="xr-node"></span>
+              <header class="xr-head">
+                <span class="xr-stamp">Sep 2023 — Present</span>
+                <span class="xr-tag">Ongoing</span>
+              </header>
+              <h3 class="xr-role">AI Developer</h3>
+              <p class="xr-org">Freelance</p>
+              <ul class="xr-bullets">
+                <li style="--bd:0">Streamlined data collection &amp; reporting — processing time down 20%.</li>
+                <li style="--bd:1">Partnered with 5+ cross-functional teams on requirements, scoping, and delivery alignment.</li>
+                <li style="--bd:2">Produced 15+ stakeholder reports &amp; presentations that turned findings into action.</li>
+              </ul>
+            </article>
+
+            <div class="xr-edu">
+              <div class="xr-edu-eyebrow">Education</div>
+              <div class="xr-edu-row" data-magnetic style="--ed:2">
+                <span class="xr-edu-degree">MCA</span>
+                <span class="xr-edu-school">Nehru College of Engineering and Research Centre</span>
+                <span class="xr-edu-years">2021 — 2023</span>
+              </div>
+              <div class="xr-edu-row" data-magnetic style="--ed:3">
+                <span class="xr-edu-degree">BCA</span>
+                <span class="xr-edu-school">Universal College of Arts and Sciences</span>
+                <span class="xr-edu-years">2018 — 2021</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         ACT 3.5: KNOWLEDGE SHARING — PUBLICATIONS & CREDENTIALS LEDGER
+         (borderless cinematic archive: spring-staggered citation cards with
+         damped-spring paper tilt, one-shot count-up, copy-citation sparks,
+         NPTEL credential chips — reuses the site's physics language)
+         ==================================================================== -->
+    <div id="stage-act35" class="stage-view stage-papers">
+      <div class="kp-frame">
+        <div class="kp-eyebrow-row">
+          <div class="xmit-eyebrow">
+            <span class="xmit-eyebrow-num">04</span>
+            <span class="xmit-eyebrow-rule"></span>
+            <span>Knowledge Sharing</span>
+          </div>
+          <div class="xmit-status">
+            <span class="xmit-status-dot"></span>
+            <span>Publications &amp; Credentials</span>
+          </div>
+        </div>
+
+        <div class="kp-grid">
+          <div class="kp-copy">
+            <h2 class="kp-headline" id="kp-headline">
+              <span class="kp-line">Proof of</span>
+              <span class="kp-line"><span class="kp-word" style="--wd:0">Work.</span></span>
+            </h2>
+
+            <p class="kp-desc">
+              Research published and credentials earned — the artifacts behind the practice,
+              cited and verifiable.
+            </p>
+
+            <div class="kp-stats">
+              <div class="kp-stat" data-magnetic style="--sd:0">
+                <span class="kp-stat-val" data-count="2" data-pad="2">02</span>
+                <span class="kp-stat-txt">Publications</span>
+              </div>
+              <div class="kp-stat" data-magnetic style="--sd:1">
+                <span class="kp-stat-val" data-count="2" data-pad="2">02</span>
+                <span class="kp-stat-txt">Certifications</span>
+              </div>
+              <div class="kp-stat" data-magnetic style="--sd:2">
+                <span class="kp-stat-val" data-count="2022">2022</span>
+                <span class="kp-stat-txt">First Published</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="kp-ledger">
+            <article class="kp-paper" style="--ed:0">
+              <span class="kp-node"></span>
+              <header class="kp-head">
+                <span class="kp-tag kp-tag-journal">Journal</span>
+                <span class="kp-stamp">IJREAM</span>
+              </header>
+              <h3 class="kp-title">Brain Machine Interface: Paths, Dangers, and Strategies of Creating Super Humans with Dominating Market Analysis</h3>
+              <p class="kp-venue">International Journal for Research in Engineering Application and Management</p>
+              <div class="kp-actions">
+                <a class="kp-link" href="#" data-magnetic>Read Paper <span class="kp-arrow">→</span></a>
+                <button class="kp-cite" type="button" data-cite="Brain Machine Interface: Paths, Dangers, and Strategies of Creating Super Humans with Dominating Market Analysis, International Journal for Research in Engineering Application and Management (IJREAM)." data-magnetic><span class="kp-cite-label">Copy Citation</span></button>
+              </div>
+            </article>
+
+            <article class="kp-paper" style="--ed:1">
+              <span class="kp-node"></span>
+              <header class="kp-head">
+                <span class="kp-tag kp-tag-conf">Conference</span>
+                <span class="kp-stamp">ICETSSI 2022</span>
+              </header>
+              <h3 class="kp-title">Big Data: Current Trends and the Future</h3>
+              <p class="kp-venue">International Conference: Emerging Trends in Signal Systems and Information</p>
+              <div class="kp-actions">
+                <button class="kp-cite" type="button" data-cite="Big Data: Current Trends and the Future, Proc. International Conference on Emerging Trends in Signal Systems and Information (ICETSSI), 2022." data-magnetic><span class="kp-cite-label">Copy Citation</span></button>
+              </div>
+            </article>
+
+            <div class="kp-certs">
+              <div class="kp-certs-eyebrow">Certifications</div>
+              <div class="kp-cert-row" data-magnetic style="--ed:2">
+                <span class="kp-cert-check">✓</span>
+                <span class="kp-cert-name">Cloud Computing</span>
+                <span class="kp-cert-id">NPTEL23CS42S54770810</span>
+                <span class="kp-cert-date">May 2023</span>
+              </div>
+              <div class="kp-cert-row" data-magnetic style="--ed:3">
+                <span class="kp-cert-check">✓</span>
+                <span class="kp-cert-name">The Joy of Computing Using Python</span>
+                <span class="kp-cert-id">NPTEL22CS122S5490238</span>
+                <span class="kp-cert-date">Nov 2022</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         ACT 4: THE HANDSHAKE — TRANSMISSION TERMINAL (borderless, cinematic)
+         ==================================================================== -->
+    <div id="stage-act4" class="stage-view stage-connect">
+      <div class="xmit-aurora" aria-hidden="true"></div>
+
+      <div class="xmit-frame">
+        <!-- hairline eyebrow row -->
+        <div class="xmit-eyebrow-row">
+          <div class="xmit-eyebrow">
+            <span class="xmit-eyebrow-num">05</span>
+            <span class="xmit-eyebrow-rule"></span>
+            <span class="xmit-eyebrow-label">Transmission</span>
+          </div>
+          <div class="xmit-status">
+            <span class="xmit-status-dot"></span>
+            <span>Available for Roles</span>
+          </div>
+        </div>
+
+        <!-- asymmetric editorial composition -->
+        <div class="xmit-grid">
+          <div class="xmit-copy">
+            <h2 class="xmit-headline" id="xmit-headline">
+              <span class="xmit-line"><span class="xmit-word" style="--wd:0">Every</span> <span class="xmit-word" style="--wd:1">great</span> <span class="xmit-word" style="--wd:2">system</span></span>
+              <span class="xmit-line"><span class="xmit-word" style="--wd:3">ends</span> <span class="xmit-word" style="--wd:4">in</span> <span class="xmit-word" style="--wd:5">a</span> <span class="xmit-word gradient-text" style="--wd:6">handshake.</span></span>
+            </h2>
+
+            <p class="xmit-sub">Available for frontier AI research, model architecture, and founding engineering roles.</p>
+
+            <!-- giant magnetic copy-target -->
+            <div class="xmit-email-wrap">
+              <button id="copy-email-button" class="xmit-email" data-magnetic data-email="thedataghost8@gmail.com" aria-label="Copy email address thedataghost8@gmail.com">
+                <span class="xmit-email-chars" id="xmit-email-chars">thedataghost8@gmail.com</span>
+                <span class="xmit-email-hint">
+                  <svg class="xmit-hint-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <span class="xmit-hint-label">Click to copy</span>
+                  <svg class="xmit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.5 5.5L20 6.5"/></svg>
+                </span>
+              </button>
+            </div>
+
+            <div class="xmit-actions">
+              <a href="mailto:vishnu.ai.ml@proton.me?subject=AI%20Engineering%20Discussion" class="xmit-btn xmit-btn-primary" data-magnetic>
+                <span class="xmit-btn-inner">Compose mail</span>
+                <svg class="xmit-btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a href="#" class="xmit-social" data-magnetic aria-label="GitHub">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.12 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.14 0 1.54-.02 2.79-.02 3.17 0 .31.21.68.8.56A11.52 11.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+              </a>
+              <a href="#" class="xmit-social" data-magnetic aria-label="LinkedIn">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- mission-control signal console -->
+          <aside class="signal-console" aria-hidden="true">
+            <div class="console-head">
+              <span class="console-title">Signal Console</span>
+              <span class="console-node">
+                <span class="console-sweep"></span>
+                <span class="console-ring"></span>
+                <span class="console-core"></span>
+              </span>
+            </div>
+            <div class="console-lines" id="console-lines"></div>
+          </aside>
+        </div>
+
+        <!-- credits strip -->
+        <div class="xmit-credits">
+          <button id="xmit-replay" class="xmit-replay" data-magnetic>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            <span>Replay journey</span>
+          </button>
+          <div class="xmit-credits-meta">
+            <span>Kochi, India · Remote Global</span>
+            <span class="xmit-credit-sep"></span>
+            <span>© 2026 Vishnu AS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Global FX layer (confetti / celebration bursts) -->
+  <div id="fx-layer"></div>
+
+  <!-- Elegant Initial Loader -->
+  <div id="loader" class="loader">
+    <div class="loader-content">
+      <div class="loader-spinner-circle"></div>
+      <span id="loader-text" class="loader-text">Loading Experience...</span>
+    </div>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+
+</html>
