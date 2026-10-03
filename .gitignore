@@ -5,7 +5,7 @@ node_modules
 
 # Testing
 coverage
-
+.reeltest
 # Next.js
 .next/
 out/

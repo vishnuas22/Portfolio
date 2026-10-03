@@ -13,6 +13,9 @@ const scrollWrapper = document.getElementById('scroll-wrapper');
 const loader = document.getElementById('loader');
 const loaderText = document.getElementById('loader-text');
 
+// Safety: if the frame buffer ever stalls, never strand the hero copy invisible.
+setTimeout(() => document.body.classList.add('is-ready'), 5000);
+
 // Telemetry DOM elements
 const telemetryFrame = document.getElementById('telemetry-frame');
 const telemetryPct = document.getElementById('telemetry-pct');
@@ -45,6 +48,7 @@ let rewindPhaseUntil = 0;    // while future-dated: telemetry phase reads "⏪ R
 let connectAct = null;       // Act 4 controller, assigned during init
 let papersAct = null;        // Act 3.5 controller, assigned during init
 let xpAct = null;            // Act 3 controller, assigned during init
+let lastNavIndex = -1;       // last nav pill index written (aria/current sync)
 
 // Path helper
 function getFramePath(index) {
@@ -52,17 +56,23 @@ function getFramePath(index) {
   return `/frames/frame_${padded}.webp`;
 }
 
+// prefers-reduced-motion is honored from the very first frame: smooth-scroll
+// easing and auto-impulses are motion features, so they opt out at construction.
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 // Lenis smooth scroll
 const lenis = new Lenis({
   duration: 1.2,
   easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  smoothWheel: true,
+  smoothWheel: !prefersReducedMotion,
   touchMultiplier: 1.5,
 });
 
 // Update scroll progress relative to hero and scroll track
 function updateScrollProgress(scrollPos = window.scrollY) {
   const heroHeight = hero ? hero.offsetHeight : window.innerHeight;
+  // Pause hero ambient motion (role cycle, grain, drift) once scrolled offscreen
+  if (hero) hero.classList.toggle('hero-past', scrollPos > heroHeight * 0.9);
   const trackHeight = scrollWrapper ? scrollWrapper.offsetHeight : 0;
   const maxTrackScroll = trackHeight - window.innerHeight;
 
@@ -77,6 +87,11 @@ function updateScrollProgress(scrollPos = window.scrollY) {
 
 lenis.on('scroll', (e) => {
   updateScrollProgress(e.scroll);
+});
+// Viewport changes can flip the nav rail between centered and overflow-scroll
+// layouts — force the next sync to re-center the active pill.
+window.addEventListener('resize', () => {
+  lastNavIndex = -1;
 });
 window.__lenis = lenis; // exposed for deep-linking / test harness
 window.__progressProbe = () => ({ target: targetProgress, current: currentProgress });
@@ -269,6 +284,8 @@ function loadSingleFrame(index) {
     // Hide loader once initial buffer is ready
     if (!isInitialReady && (loaded[0] || loadedCount >= INITIAL_BUFFER_COUNT)) {
       isInitialReady = true;
+      // Kick off the hero title-card entrance (Act 0) in sync with the loader
+      document.body.classList.add('is-ready');
       if (loader) {
         loader.classList.add('hidden');
         setTimeout(() => {
@@ -348,7 +365,8 @@ function updateNarrativeLayers(progress, targetIndex) {
     stageAct2.classList.toggle('stage-active', isAct2);
     if (isAct2 && !wasActive) {
       if (window.__setPlaygroundActive) window.__setPlaygroundActive(true);
-      if (window.triggerPhysicsImpulse) window.triggerPhysicsImpulse();
+      // Auto-impulse is decorative motion — skip it under prefers-reduced-motion.
+      if (!prefersReducedMotion && window.triggerPhysicsImpulse) window.triggerPhysicsImpulse();
     }
     if (!isAct2 && wasActive && window.__setPlaygroundActive) {
       window.__setPlaygroundActive(false);
@@ -416,8 +434,25 @@ function updateNarrativeLayers(progress, targetIndex) {
   }
 
   navItemPills.forEach((pill, idx) => {
-    pill.classList.toggle('active', idx === activeNavIndex);
+    const on = idx === activeNavIndex;
+    pill.classList.toggle('active', on);
+    if (on) pill.setAttribute('aria-current', 'true');
+    else pill.removeAttribute('aria-current');
   });
+
+  // Keep the active pill visible in the mobile scrollable rail (never scrolls
+  // the page itself — only the pill group's own overflow).
+  if (activeNavIndex !== lastNavIndex) {
+    lastNavIndex = activeNavIndex;
+    const pill = navItemPills[activeNavIndex];
+    if (pill) {
+      const rail = pill.parentElement;
+      if (rail && rail.scrollWidth > rail.clientWidth + 1) {
+        const target = pill.offsetLeft - (rail.clientWidth - pill.offsetWidth) / 2;
+        rail.scrollTo({ left: Math.max(0, target), behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+      }
+    }
+  }
 }
 
 // Main animation loop
@@ -1193,6 +1228,7 @@ function initPapersAct() {
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const magneticOn = finePointer && !reduceMotion;
   const fxLayer = document.getElementById('fx-layer');
 
   const statEls = Array.from(stage.querySelectorAll('.kp-stat-val'));
@@ -1240,9 +1276,11 @@ function initPapersAct() {
     settled: false,
   }));
 
-  // plain magnets: stats, chips, buttons — pure translate, same constants as Act 3/4
+  // plain magnets: stats, chips, buttons — pure translate, same constants as Act 3/4.
+  // Paper cards also carry data-magnetic but get their pull merged into the tilt
+  // spring below (one transform writer per element) instead of this pool.
   const magnets = [];
-  if (finePointer && !reduceMotion) {
+  if (magneticOn) {
     stage.querySelectorAll('.kp-stat, .kp-cert-row, .kp-link, .kp-cite').forEach((el) => {
       magnets.push({ el, rect: null, x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, moved: false, maxShift: 5 });
     });
@@ -1272,14 +1310,28 @@ function initPapersAct() {
   }
 
   function updatePhysics() {
-    // paper cards: land from 26px + pointer tilt (3D paper weight)
+    // paper cards: land from 26px + pointer tilt (3D paper weight) + magnetic pull
     for (const p of papers) {
       if (!p.rect || !p.rect.width) { p.rect = p.el.getBoundingClientRect(); continue; }
       const cx = p.rect.left + p.rect.width / 2;
       const cy = p.rect.top + p.rect.height / 2;
-      // translate spring toward rest
-      p.vx = (p.vx + (0 - p.x) * 0.16) * 0.74;
-      p.vy = (p.vy + (0 - p.y) * 0.16) * 0.74;
+      // magnetic rest target — same falloff constants as the plain magnets below
+      let mtx = 0;
+      let mty = 0;
+      if (magneticOn) {
+        const mdx = pointerX - cx;
+        const mdy = pointerY - cy;
+        const mdist = Math.hypot(mdx, mdy);
+        const mrad = 110 + Math.max(p.rect.width, p.rect.height) / 2;
+        if (mdist < mrad && mdist > 0.001) {
+          const fall = 1 - mdist / mrad;
+          mtx = Math.max(-5, Math.min(5, mdx * 0.28 * fall));
+          mty = Math.max(-5, Math.min(5, mdy * 0.28 * fall));
+        }
+      }
+      // translate spring toward the magnetic offset (0 when the pointer is away)
+      p.vx = (p.vx + (mtx - p.x) * 0.16) * 0.74;
+      p.vy = (p.vy + (mty - p.y) * 0.16) * 0.74;
       p.x += p.vx;
       p.y += p.vy;
       // tilt spring: normalized pointer offset drives rotateX/rotateY targets
@@ -1295,7 +1347,8 @@ function initPapersAct() {
       const still =
         Math.abs(p.x) < 0.02 && Math.abs(p.y) < 0.02 &&
         Math.abs(p.rx) < 0.02 && Math.abs(p.ry) < 0.02 &&
-        Math.abs(trx) < 0.01 && Math.abs(tryD) < 0.01;
+        Math.abs(trx) < 0.01 && Math.abs(tryD) < 0.01 &&
+        Math.abs(mtx) < 0.01 && Math.abs(mty) < 0.01;
       if (still) {
         if (!p.settled) {
           p.el.style.transform = '';
@@ -1352,7 +1405,9 @@ function initPapersAct() {
   function loop() {
     if (!active) return;
     if (!reduceMotion) {
-      const p35Target = Math.min(1, Math.max(0, (targetProgress - 0.94) / 0.02));
+      // Choreography completes at scroll 0.955 (mid-act dwell tail, mirrors
+      // Act 3's 0.93 completion) — papers-test asserts p35 > 0.9 at 0.955.
+      const p35Target = Math.min(1, Math.max(0, (targetProgress - 0.94) / 0.015));
       p35 += (p35Target - p35) * 0.09;
       if (Math.abs(p35Target - p35) < 0.001) p35 = p35Target;
       stage.style.setProperty('--act35-p', p35.toFixed(4));

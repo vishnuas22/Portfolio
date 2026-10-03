@@ -5,18 +5,55 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vishnu AS — AI/ML Engineer</title>
+  <meta name="description" content="Cinematic portfolio of Vishnu AS — AI/ML engineer building autonomous systems, generative AI, and production ML pipelines. Projects, research publications, experience, and contact." />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#000000" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Open Graph / social sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Vishnu AS — AI/ML Engineer" />
+  <meta property="og:title" content="Vishnu AS — AI/ML Engineer" />
+  <meta property="og:description" content="Cinematic portfolio of Vishnu AS — AI/ML engineer building autonomous systems, generative AI, and production ML pipelines." />
+  <meta property="og:image" content="/hero/hero_landing.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Vishnu AS — AI/ML Engineer" />
+  <meta name="twitter:description" content="Cinematic portfolio of Vishnu AS — AI/ML engineer building autonomous systems, generative AI, and production ML pipelines." />
+  <meta name="twitter:image" content="/hero/hero_landing.png" />
 
   <!-- Google Sans typography (self-hosted, latin subset) -->
   <link rel="preload" href="/fonts/GoogleSans-700.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/GoogleSansText-400.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" as="image" type="image/webp" href="/frames/frame_0001.webp" fetchpriority="high" />
   <link rel="stylesheet" href="/fonts/fonts.css" />
   <link rel="stylesheet" href="/style.css" />
+
+  <!-- Progressive-enhancement gate: hero entrance states only apply with JS -->
+  <script>document.documentElement.classList.add('js');</script>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Vishnu AS",
+      "jobTitle": "AI/ML Engineer",
+      "email": "mailto:thedataghost8@gmail.com",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Kochi",
+        "addressCountry": "IN"
+      },
+      "alumniOf": "Nehru College of Engineering and Research Centre",
+      "knowsAbout": ["Artificial Intelligence", "Machine Learning", "Deep Learning", "Generative AI", "Data Science", "SQL"]
+    }
+  </script>
 </head>
 
 <body>
+  <a class="skip-link" href="#scroll-wrapper">Skip to content</a>
+
   <!-- Fixed Cinematic Background Canvas -->
-  <canvas id="canvas"></canvas>
+  <canvas id="canvas" aria-hidden="true"></canvas>
 
   <!-- Top Letterbox Margin: Google-Tier Navigation (lives inside the baked black bar) -->
   <header class="top-nav-bar">
@@ -29,8 +66,8 @@
     </div>
 
     <!-- Clean Navigation Pills -->
-    <nav class="nav-pill-group">
-      <button class="nav-item-pill active" data-target="0.08">Systems</button>
+    <nav class="nav-pill-group" aria-label="Primary">
+      <button class="nav-item-pill active" data-target="0.08" aria-current="true">Systems</button>
       <button class="nav-item-pill" data-target="0.32">Technical Expertise</button>
       <button class="nav-item-pill" data-target="0.49">Projects</button>
       <button class="nav-item-pill" data-target="0.915">Experience</button>
@@ -44,10 +81,54 @@
     </div>
   </header>
 
-  <!-- Hero Landing Section (Act 0) -->
+  <!-- Bottom Letterbox Margin: Live Telemetry Dock (decorative readout) -->
+  <aside class="bottom-telemetry-bar" aria-hidden="true">
+    <div class="telemetry-pill">
+      <span class="rec-indicator"></span>
+      <span id="telemetry-frame">Frame 001 / 472</span>
+    </div>
+
+    <div class="telemetry-pill scrub-pill">
+      <span class="telemetry-title">Scrub</span>
+      <div class="telemetry-bar-track">
+        <div id="telemetry-progress-fill" class="telemetry-bar-fill"></div>
+      </div>
+      <span id="telemetry-pct">0%</span>
+    </div>
+
+    <div class="telemetry-pill phase-pill">
+      <span id="telemetry-phase">Prologue</span>
+    </div>
+  </aside>
+
+  <!-- Hero Landing Section (Act 0) — title card -->
   <section id="hero" class="hero-section">
     <img id="hero-img" src="/hero/hero_landing.jpg" alt="Vishnu AS - AI/ML Engineer" class="hero-img"
+      fetchpriority="high" decoding="async"
       onerror="if(this.src.endsWith('.jpg')) this.src='/hero/hero_landing.png';" />
+    <div class="hero-scrim" aria-hidden="true"></div>
+    <div class="hero-grain" aria-hidden="true"></div>
+
+    <div class="hero-copy">
+      <h1 class="sr-only">Vishnu AS</h1>
+      <p class="hero-kicker">
+        <span class="kicker-rule" aria-hidden="true"></span>
+        Act 0 — Overture · Portfolio 2026
+      </p>
+      <p class="hero-role">
+        <span class="sr-only">AI/ML Engineer · Data Scientist · Generative AI Engineer · Applied Researcher</span>
+        <span class="role-viewport" aria-hidden="true">
+          <span class="role-track">
+            <span class="role-item">AI/ML Engineer</span>
+            <span class="role-item">Data Scientist</span>
+            <span class="role-item">Generative AI Engineer</span>
+            <span class="role-item">Applied Researcher</span>
+            <span class="role-item">AI/ML Engineer</span>
+          </span>
+        </span>
+      </p>
+      <p class="hero-tagline">I build AI that ships — from research papers to production pipelines.</p>
+    </div>
 
     <div class="hero-scroll-cue">
       <span class="cue-text">Scroll to explore</span>
@@ -57,7 +138,7 @@
     </div>
   </section>
 
-  <!-- Virtual Scroll Track (650vh) -->
+  <!-- Virtual Scroll Track (900vh) -->
   <div id="scroll-wrapper"></div>
 
   <!-- NARRATIVE STAGES LAYER (constrained to the film safe area) -->
@@ -361,7 +442,7 @@
           </div>
 
           <div class="kp-ledger">
-            <article class="kp-paper" style="--ed:0">
+            <article class="kp-paper" data-magnetic style="--ed:0">
               <span class="kp-node"></span>
               <header class="kp-head">
                 <span class="kp-tag kp-tag-journal">Journal</span>
@@ -371,11 +452,11 @@
               <p class="kp-venue">International Journal for Research in Engineering Application and Management</p>
               <div class="kp-actions">
                 <a class="kp-link" href="#" data-magnetic>Read Paper <span class="kp-arrow">→</span></a>
-                <button class="kp-cite" type="button" data-cite="Brain Machine Interface: Paths, Dangers, and Strategies of Creating Super Humans with Dominating Market Analysis, International Journal for Research in Engineering Application and Management (IJREAM)." data-magnetic><span class="kp-cite-label">Copy Citation</span></button>
+                <button class="kp-cite" type="button" data-cite="Brain Machine Interface: Paths, Dangers, and Strategies of Creating Super Humans with Dominating Market Analysis, International Journal for Research in Engineering Application and Management (IJREAM)." data-magnetic><span class="kp-cite-label" aria-live="polite">Copy Citation</span></button>
               </div>
             </article>
 
-            <article class="kp-paper" style="--ed:1">
+            <article class="kp-paper" data-magnetic style="--ed:1">
               <span class="kp-node"></span>
               <header class="kp-head">
                 <span class="kp-tag kp-tag-conf">Conference</span>
@@ -384,7 +465,7 @@
               <h3 class="kp-title">Big Data: Current Trends and the Future</h3>
               <p class="kp-venue">International Conference: Emerging Trends in Signal Systems and Information</p>
               <div class="kp-actions">
-                <button class="kp-cite" type="button" data-cite="Big Data: Current Trends and the Future, Proc. International Conference on Emerging Trends in Signal Systems and Information (ICETSSI), 2022." data-magnetic><span class="kp-cite-label">Copy Citation</span></button>
+                <button class="kp-cite" type="button" data-cite="Big Data: Current Trends and the Future, Proc. International Conference on Emerging Trends in Signal Systems and Information (ICETSSI), 2022." data-magnetic><span class="kp-cite-label" aria-live="polite">Copy Citation</span></button>
               </div>
             </article>
 
@@ -444,14 +525,14 @@
                 <span class="xmit-email-chars" id="xmit-email-chars">thedataghost8@gmail.com</span>
                 <span class="xmit-email-hint">
                   <svg class="xmit-hint-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                  <span class="xmit-hint-label">Click to copy</span>
+                  <span class="xmit-hint-label" aria-live="polite">Click to copy</span>
                   <svg class="xmit-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.5 5.5L20 6.5"/></svg>
                 </span>
               </button>
             </div>
 
             <div class="xmit-actions">
-              <a href="mailto:vishnu.ai.ml@proton.me?subject=AI%20Engineering%20Discussion" class="xmit-btn xmit-btn-primary" data-magnetic>
+              <a href="mailto:thedataghost8@gmail.com?subject=AI%20Engineering%20Discussion" class="xmit-btn xmit-btn-primary" data-magnetic>
                 <span class="xmit-btn-inner">Compose mail</span>
                 <svg class="xmit-btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </a>
@@ -499,7 +580,7 @@
   <div id="fx-layer"></div>
 
   <!-- Elegant Initial Loader -->
-  <div id="loader" class="loader">
+  <div id="loader" class="loader" role="status" aria-live="polite">
     <div class="loader-content">
       <div class="loader-spinner-circle"></div>
       <span id="loader-text" class="loader-text">Loading Experience...</span>
