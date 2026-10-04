@@ -221,6 +221,73 @@ body {
   pointer-events: auto;
 }
 
+/* Sound toggle — mini equalizer pill inside the nav status cluster.
+   The parent .top-nav-bar is pointer-events:none; this re-enables itself. */
+.sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(10, 12, 16, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 30px;
+  padding: 6px 12px;
+  font-family: var(--font-head);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: border-color 0.25s var(--ease-google), color 0.25s var(--ease-google),
+    background 0.25s var(--ease-google);
+}
+
+.sound-toggle:hover {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.sound-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 11px;
+}
+
+.sound-bars i {
+  width: 2.5px;
+  height: 100%;
+  background: currentColor;
+  border-radius: 1.5px;
+  transform-origin: bottom;
+  animation: soundEQ 1s ease-in-out infinite;
+}
+
+.sound-bars i:nth-child(1) { animation-delay: -0.25s; }
+.sound-bars i:nth-child(2) { animation-delay: -0.6s; }
+.sound-bars i:nth-child(3) { animation-delay: -0.4s; }
+
+@keyframes soundEQ {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+
+.sound-toggle.is-muted {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.sound-toggle.is-muted .sound-bars i {
+  animation: none;
+  transform: scaleY(0.3);
+  opacity: 0.7;
+}
+
+.sound-toggle.is-unavailable {
+  display: none;
+}
+
 .status-dot {
   width: 7px;
   height: 7px;
@@ -559,6 +626,49 @@ html.js .hero-copy > .hero-kicker { transition-delay: 0.2s; }
 html.js .hero-copy > .hero-role { transition-delay: 0.4s; }
 html.js .hero-copy > .hero-tagline { transition-delay: 0.6s; }
 
+/* Auto-tour CTA — rides the .hero-copy entrance (beat 0.9s) while keeping
+   instant hover feedback; the transition list must out-specify the generic
+   `html.js .hero-copy > *` entrance rule or the shorthand resets it. */
+.hero-tour-btn {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  background: rgba(10, 12, 16, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+}
+
+.hero-tour-btn:hover {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(20, 24, 32, 0.7);
+}
+
+html.js .hero-copy > .hero-tour-btn {
+  transition:
+    opacity 0.6s ease 0.9s,
+    transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.9s,
+    border-color 0.25s var(--ease-google),
+    color 0.25s var(--ease-google),
+    background 0.25s var(--ease-google);
+}
+
+.tour-btn-glyph {
+  font-size: 9px;
+  line-height: 1;
+}
+
 /* Mask reveal: the track slides up into the overflow-hidden viewport.
    Uses the individual `translate` property so it composes with the
    roleSwap animation's `transform` instead of fighting it. */
@@ -659,6 +769,20 @@ html.js body.is-ready .hero-scroll-cue {
   transform: translateY(0);
   transition: opacity 0.55s var(--ease-google), transform 0.55s var(--ease-google),
     visibility 0s linear 0s;
+}
+
+/* While the hero is physically on screen, narrative stages must not swallow
+   pointer events. `currentProgress` is a lerp, so after a jump back to the
+   top an act can hold `.stage-active` — fully hit-testable — for a beat while
+   the hero is already in view, covering the hero's tour button. Physical
+   scroll past 0.9·hero always implies .hero-past (act windows start at
+   y = hero + 0.02·track), so no legitimate in-act interaction is lost.
+   The two descendants that re-declare `pointer-events: auto` are named too —
+   pointer-events is inherited, but an explicit `auto` would re-enable them. */
+.hero-section:not(.hero-past) ~ .narrative-stages-container .stage-view.stage-active,
+.hero-section:not(.hero-past) ~ .narrative-stages-container .skill-bead,
+.hero-section:not(.hero-past) ~ .narrative-stages-container .reel-scene {
+  pointer-events: none;
 }
 
 /* Eyebrow chip — borderless tinted label */
@@ -3067,8 +3191,13 @@ html.js body.is-ready .hero-scroll-cue {
   }
 
   .brand-tag,
-  .status-label {
+  .status-label,
+  .sound-label {
     display: none;
+  }
+
+  .sound-toggle {
+    padding: 6px 9px;
   }
 
   .nav-pill-group {
@@ -3112,6 +3241,12 @@ html.js body.is-ready .hero-scroll-cue {
   .status-dot,
   .rec-indicator {
     animation: none;
+  }
+
+  /* The auto-tour is a motion feature — drop it entirely (JS guards too).
+     The sound toggle stays: audio is not motion. */
+  .hero-tour-btn {
+    display: none;
   }
 
   /* Hero title card: static composition — first role, no drift, no grain
@@ -3323,6 +3458,15 @@ html.js body.is-ready .hero-scroll-cue {
 
 .reel-scene.is-active {
   pointer-events: auto;
+}
+
+/* Inactive reel stage must never swallow pointer events. The crossfade scrub
+   re-declares visibility on scenes (inline), so inside the opacity-0 stage
+   they remain hit-testable islands that steal clicks from whatever sits below
+   (e.g. the hero's tour button). Only while the stage itself is active may
+   scenes take events. Specificity beats `.reel-scene.is-active`. */
+.stage-view:not(.stage-active) .reel-scene {
+  pointer-events: none;
 }
 
 /* ---- scene copy column ---- */

@@ -1,6 +1,7 @@
 import Lenis from 'lenis';
 import Matter from 'matter-js';
 import { initProjectReel } from './projects.js';
+import { initSoundscape } from './audio.js';
 
 const TOTAL_FRAMES = 472;
 const MAX_CONCURRENT = 12;
@@ -462,6 +463,10 @@ function tick(time) {
   // Belt & braces: derive target from actual scroll position every frame so
   // scrollbar drags, anchor jumps and immediate scrolls never go stale.
   updateScrollProgress(window.scrollY);
+
+  // Soundscape: idle detection, fades and the auto-tour deviation guard all
+  // ride this same rAF tick (audio.js).
+  soundscape.frame(window.scrollY, time);
 
   const lerpFactor = 0.14;
   currentProgress += (targetProgress - currentProgress) * lerpFactor;
@@ -1894,6 +1899,9 @@ loadSingleFrame(0);
 for (let i = 0; i < INITIAL_BUFFER_COUNT; i++) {
   loadSingleFrame(i);
 }
+
+// Soundscape — scroll-linked score + auto-tour (frame() joins the tick below)
+const soundscape = initSoundscape({ lenis, prefersReducedMotion });
 
 updateScrollProgress();
 requestAnimationFrame(tick);

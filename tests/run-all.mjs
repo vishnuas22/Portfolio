@@ -9,6 +9,7 @@ const suites = [
   ['Experience (Act 3)', 'tests/xp-test.mjs'],
   ['Knowledge (Act 3.5)', 'tests/papers-test.mjs'],
   ['Contact (Act 4)', 'tests/contact-test.mjs'],
+  ['Soundscape (audio + tour)', 'tests/audio-test.mjs'],
 ];
 
 const results = [];
