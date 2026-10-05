@@ -49,7 +49,11 @@ const consoleErrors = [];
 const failed404 = [];
 page.on('console', (m) => { if (m.type() === 'error') consoleErrors.push(m.text()); });
 page.on('pageerror', (e) => consoleErrors.push(String(e)));
-page.on('response', (r) => { if (r.status() === 404) failed404.push(r.url()); });
+// /resume.pdf 404 is EXPECTED until the real PDF is uploaded — it's the
+// intentional HEAD probe that drives the CTA's graceful pending state.
+page.on('response', (r) => {
+  if (r.status() === 404 && !r.url().endsWith('/resume.pdf')) failed404.push(r.url());
+});
 
 const probe = () => page.evaluate(() => window.__audioProbe());
 const scrollTo = (y, opts = {}) =>
@@ -75,6 +79,38 @@ await sleep(1200);
   });
   check('tour button visible after entrance', btn.visible === true);
   check('tour button label', btn.label.includes('Take the tour'), btn.label);
+
+  // Résumé CTA (pending-state must mirror the file's actual presence)
+  const fileOk = await page.evaluate(async () => {
+    try {
+      const r = await fetch('/resume.pdf', { method: 'HEAD' });
+      return r.ok && (r.headers.get('content-type') || '').includes('pdf');
+    } catch { return false; }
+  });
+  const pendingMatched = await waitFor(async () => {
+    const pending = await page.evaluate(() =>
+      document.getElementById('hero-resume').classList.contains('is-pending'));
+    return pending === !fileOk;
+  }, 4000);
+  const resume = await page.evaluate(() => {
+    const b = document.getElementById('hero-resume');
+    const cs = getComputedStyle(b);
+    return {
+      display: cs.display,
+      href: b.getAttribute('href'),
+      pending: b.classList.contains('is-pending'),
+    };
+  });
+  // Poll: the row rides a 1.05s-delayed entrance after the loader hides.
+  const rowSettled = await waitFor(async () =>
+    (await page.evaluate(() =>
+      getComputedStyle(document.querySelector('.hero-actions')).opacity)) === '1', 5000);
+  check('resume button visible in hero',
+    resume.display !== 'none' && rowSettled,
+    `${resume.display} rowSettled=${rowSettled}`);
+  check('resume button wired to /resume.pdf', resume.href === '/resume.pdf', resume.href);
+  check('resume pending-state matches file presence', pendingMatched,
+    `fileOk=${fileOk} pending=${resume.pending}`);
 }
 
 // ---------- 2. audio files served ----------
@@ -254,9 +290,11 @@ for (const [rnd, expect] of [[0.01, 'aura-farming-1.m4a'], [0.99, 'aura-farming-
   const state = await pg.evaluate(() => ({
     tour: getComputedStyle(document.getElementById('hero-tour')).display,
     toggle: getComputedStyle(document.getElementById('sound-toggle')).display,
+    resume: getComputedStyle(document.getElementById('hero-resume')).display,
   }));
   check('reduced motion hides tour button', state.tour === 'none', state.tour);
   check('reduced motion keeps sound toggle', state.toggle !== 'none', state.toggle);
+  check('reduced motion keeps resume button', state.resume !== 'none', state.resume);
   await pg.close();
 }
 

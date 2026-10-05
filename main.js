@@ -6,6 +6,15 @@ import { initSoundscape } from './audio.js';
 const TOTAL_FRAMES = 472;
 const MAX_CONCURRENT = 12;
 const INITIAL_BUFFER_COUNT = 24;
+// Scoped warm-up + release window: first visits only stream frames near the
+// playhead (not all 472 ≈ 916MB), and far-from-playhead Image references are
+// dropped so a session can't pin the whole film in memory. Eviction band is
+// wider than the prefetch band on purpose — hysteresis, no evict/refetch
+// thrash. Bytes on disk/CDN are untouched (frames stay 4K).
+const PREFETCH_AHEAD = 90;  // warm frames ahead of the playhead
+const PREFETCH_BEHIND = 40; // …and a short trail behind (priority loops cover 40/20 first)
+const EVICT_AHEAD = 130;    // release band: [idx-EVICT_BEHIND, idx+EVICT_AHEAD]
+const EVICT_BEHIND = 50;
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d', { alpha: false });
@@ -23,6 +32,67 @@ const telemetryPct = document.getElementById('telemetry-pct');
 const telemetryProgressFill = document.getElementById('telemetry-progress-fill');
 const telemetryPhase = document.getElementById('telemetry-phase');
 const navItemPills = document.querySelectorAll('.nav-item-pill');
+
+// --- Contact mailbox — one constant, stamped everywhere at boot -------------
+// When the temporary address is replaced: change this + the static mirrors
+// flagged "CONTACT EMAIL" in index.html (JSON-LD + copy-button text node).
+const CONTACT_EMAIL = 'thedataghost8@gmail.com';
+
+function hydrateContactEmail() {
+  document.querySelectorAll('[data-email]').forEach((el) => {
+    el.dataset.email = CONTACT_EMAIL;
+    if ((el.getAttribute('aria-label') || '').includes('@')) {
+      el.setAttribute('aria-label', `Copy email address ${CONTACT_EMAIL}`);
+    }
+  });
+  document.querySelectorAll('a[href^="mailto:"]').forEach((a) => {
+    const query = a.getAttribute('href').split('?')[1] || '';
+    a.href = `mailto:${CONTACT_EMAIL}${query ? '?' + query : ''}`;
+  });
+  const chars = document.getElementById('xmit-email-chars');
+  // initConnectAct() does the per-char split later — only refresh plain text.
+  if (chars && !chars.dataset.split) chars.textContent = CONTACT_EMAIL;
+}
+hydrateContactEmail();
+
+// --- Hero résumé CTA — graceful until public/resume.pdf is uploaded ---------
+function initResumeCta() {
+  const btn = document.getElementById('hero-resume');
+  const status = document.getElementById('resume-status');
+  if (!btn) return;
+  let pending = false;
+  let statusTimer = 0;
+
+  const showStatus = (msg) => {
+    if (!status) return;
+    status.textContent = msg;
+    status.classList.add('show');
+    clearTimeout(statusTimer);
+    statusTimer = setTimeout(() => status.classList.remove('show'), 2600);
+  };
+
+  // HEAD probe must verify the response really is a PDF: dev servers may
+  // answer SPA fallbacks with 200 text/html, which would break the download.
+  fetch('/resume.pdf', { method: 'HEAD' })
+    .then((r) => {
+      const ct = r.headers.get('content-type') || '';
+      if (!r.ok || !ct.includes('pdf')) throw new Error(`HEAD ${r.status} ${ct}`);
+    })
+    .catch(() => {
+      pending = true;
+      btn.classList.add('is-pending');
+      btn.setAttribute('aria-disabled', 'true');
+      btn.removeAttribute('download');
+    });
+
+  btn.addEventListener('click', (e) => {
+    if (pending) {
+      e.preventDefault();
+      showStatus('Résumé PDF coming soon — email me for a copy');
+    }
+  });
+}
+initResumeCta();
 
 // Narrative Stage DOM elements
 const stageAct1 = document.getElementById('stage-act1');
@@ -328,13 +398,40 @@ function pumpQueue() {
     }
   }
 
+  // Priority: playhead forward, then recent backward…
   for (let i = 0; i <= 40; i++) addToQueue(currentIdx + i);
   for (let i = 1; i <= 20; i++) addToQueue(currentIdx - i);
-  for (let i = 0; i < TOTAL_FRAMES; i++) addToQueue(i);
+  // …then the rest of the warm window — deliberately NOT the whole film.
+  for (let i = -PREFETCH_BEHIND; i <= PREFETCH_AHEAD; i++) addToQueue(currentIdx + i);
 
   while (activeDownloads < MAX_CONCURRENT && queue.length > 0) {
     const nextIdx = queue.shift();
     loadSingleFrame(nextIdx);
+  }
+}
+
+// Release Image references far from the playhead (memory only — the frames
+// themselves stay 4K on disk; scrolling back into a released zone simply
+// re-queues them, and after the first visit the immutable cache serves them
+// from disk). Runs at most once the playhead has moved ≥8 frames so idle
+// frames never thrash. `loaded[]` must flip too, or addToQueue would treat a
+// released frame as still cached and never re-fetch it.
+let lastEvictIdx = -999;
+function evictFarFrames() {
+  if (!isInitialReady) return;
+  const idx = Math.round(currentProgress * (TOTAL_FRAMES - 1));
+  if (Math.abs(idx - lastEvictIdx) < 8) return;
+  lastEvictIdx = idx;
+  const lo = idx - EVICT_BEHIND;
+  const hi = idx + EVICT_AHEAD;
+  for (let i = 0; i < TOTAL_FRAMES; i++) {
+    if (!images[i]) continue;
+    if (i === currentlyDisplayedIndex) continue; // the frame painted on canvas
+    if (i === CALIBRATION_FRAME && !filmState.calibrated) continue; // letterbox needs it once
+    if (i < lo || i > hi) {
+      images[i] = null;
+      loaded[i] = false;
+    }
   }
 }
 
@@ -488,6 +585,7 @@ function tick(time) {
     drawFrame(targetIndex);
   }
 
+  evictFarFrames();
   updateNarrativeLayers(currentProgress, targetIndex);
   pumpQueue();
 
@@ -1509,7 +1607,7 @@ function initConnectAct() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  const EMAIL = 'thedataghost8@gmail.com';
+  const EMAIL = CONTACT_EMAIL; // single source of truth — top of file
   const emailBtn = document.getElementById('copy-email-button');
   const emailCharsEl = document.getElementById('xmit-email-chars');
   const hintLabel = emailBtn ? emailBtn.querySelector('.xmit-hint-label') : null;
@@ -1899,6 +1997,10 @@ loadSingleFrame(0);
 for (let i = 0; i < INITIAL_BUFFER_COUNT; i++) {
   loadSingleFrame(i);
 }
+// Letterbox calibration frame — scoped prefetch no longer guarantees the old
+// global sweep ever passed #235 (e.g. nav-pill jumps), so pin its load;
+// evictFarFrames protects it until filmState.calibrated flips.
+loadSingleFrame(CALIBRATION_FRAME);
 
 // Soundscape — scroll-linked score + auto-tour (frame() joins the tick below)
 const soundscape = initSoundscape({ lenis, prefersReducedMotion });

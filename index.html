@@ -15,11 +15,11 @@
   <meta property="og:site_name" content="Vishnu AS — AI/ML Engineer" />
   <meta property="og:title" content="Vishnu AS — AI/ML Engineer" />
   <meta property="og:description" content="Cinematic portfolio of Vishnu AS — AI/ML engineer building autonomous systems, generative AI, and production ML pipelines." />
-  <meta property="og:image" content="/hero/hero_landing.png" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Vishnu AS — AI/ML Engineer" />
-  <meta name="twitter:description" content="Cinematic portfolio of Vishnu AS — AI/ML engineer building autonomous systems, generative AI, and production ML pipelines." />
-  <meta name="twitter:image" content="/hero/hero_landing.png" />
+  <!-- TODO(og-url): when the production domain is final, make og:image an
+       absolute URL (https://<domain>/hero/hero_landing.jpg) — most social
+       scrapers reject relative image URLs. No twitter:* card tags: there is
+       no Twitter/X account to serve (Open Graph above covers LinkedIn/WA/Discord). -->
+  <meta property="og:image" content="/hero/hero_landing.jpg" />
 
   <!-- Google Sans typography (self-hosted, latin subset) -->
   <link rel="preload" href="/fonts/GoogleSans-700.woff2" as="font" type="font/woff2" crossorigin />
@@ -31,6 +31,9 @@
   <!-- Progressive-enhancement gate: hero entrance states only apply with JS -->
   <script>document.documentElement.classList.add('js');</script>
 
+  <!-- CONTACT EMAIL — runtime source of truth is CONTACT_EMAIL in main.js
+       (stamps the interactive Act 4 bits at boot). This JSON-LD mirror is
+       static for crawlers: update it too when the address changes. -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -109,7 +112,7 @@
   <section id="hero" class="hero-section">
     <img id="hero-img" src="/hero/hero_landing.jpg" alt="Vishnu AS - AI/ML Engineer" class="hero-img"
       fetchpriority="high" decoding="async"
-      onerror="if(this.src.endsWith('.jpg')) this.src='/hero/hero_landing.png';" />
+      onerror="this.style.display='none'" />
     <div class="hero-scrim" aria-hidden="true"></div>
     <div class="hero-grain" aria-hidden="true"></div>
 
@@ -132,10 +135,26 @@
         </span>
       </p>
       <p class="hero-tagline">I build AI that ships — from research papers to production pipelines.</p>
-      <button id="hero-tour" class="hero-tour-btn" type="button" aria-label="Start automatic guided tour of the portfolio">
-        <span class="tour-btn-glyph" aria-hidden="true">▶</span>
-        <span class="tour-btn-label">Take the tour</span>
-      </button>
+      <div class="hero-actions">
+        <a id="hero-resume" class="hero-resume-btn" href="/resume.pdf" download
+          aria-label="Download résumé (PDF)">
+          <span class="resume-glyph" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          </span>
+          <span class="resume-label">Download résumé</span>
+          <span class="resume-shine" aria-hidden="true"></span>
+        </a>
+        <button id="hero-tour" class="hero-tour-btn" type="button" aria-label="Start automatic guided tour of the portfolio">
+          <span class="tour-btn-glyph" aria-hidden="true">▶</span>
+          <span class="tour-btn-label">Take the tour</span>
+        </button>
+        <span id="resume-status" class="resume-status" role="status" aria-live="polite"></span>
+      </div>
     </div>
 
     <div class="hero-scroll-cue">
@@ -175,16 +194,16 @@
         <!-- Metric badges without boxy borders -->
         <div class="metrics-row">
           <div class="metric-pill">
-            <span class="metric-val">4.2×</span>
-            <span class="metric-txt">Inference Speedup</span>
+            <span class="metric-val">Real-time</span>
+            <span class="metric-txt">LLM Inference</span>
           </div>
           <div class="metric-pill">
-            <span class="metric-val">&lt; 15ms</span>
-            <span class="metric-txt">P99 Latency</span>
+            <span class="metric-val">GPU-tuned</span>
+            <span class="metric-txt">Model Acceleration</span>
           </div>
           <div class="metric-pill">
-            <span class="metric-val">100B+</span>
-            <span class="metric-txt">Params Trained</span>
+            <span class="metric-val">Agentic</span>
+            <span class="metric-txt">AI Architectures</span>
           </div>
         </div>
       </div>
@@ -528,6 +547,9 @@
             <p class="xmit-sub">Available for frontier AI research, model architecture, and founding engineering roles.</p>
 
             <!-- giant magnetic copy-target -->
+            <!-- CONTACT EMAIL mirror — runtime source of truth is CONTACT_EMAIL
+                 in main.js (this block is re-stamped at boot; JSON-LD above is
+                 static and needs a manual edit when the address changes). -->
             <div class="xmit-email-wrap">
               <button id="copy-email-button" class="xmit-email" data-magnetic data-email="thedataghost8@gmail.com" aria-label="Copy email address thedataghost8@gmail.com">
                 <span class="xmit-email-chars" id="xmit-email-chars">thedataghost8@gmail.com</span>
