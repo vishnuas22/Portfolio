@@ -7,6 +7,7 @@ const suites = [
   ['Project reel (Act 2.5)', 'tests/reel-test.mjs'],
   ['Project reel drill', 'tests/reel-drill.mjs'],
   ['Experience (Act 3)', 'tests/xp-test.mjs'],
+  ['Pulse — GitHub activity (Act 3.4)', 'tests/github-test.mjs'],
   ['Knowledge (Act 3.5)', 'tests/papers-test.mjs'],
   ['Contact (Act 4)', 'tests/contact-test.mjs'],
   ['Soundscape (audio + tour)', 'tests/audio-test.mjs'],

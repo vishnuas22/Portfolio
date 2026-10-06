@@ -28,9 +28,10 @@ npm test         # terminal 2 — runs every suite + roll-up
 ```
 
 Individual suites: `node tests/papers-test.mjs`, `tests/xp-test.mjs`,
-`tests/reel-test.mjs`, `tests/reel-drill.mjs`, `tests/contact-test.mjs`,
-`tests/act1-baseline.mjs`. Screenshot helpers: `tests/papers-shots.mjs`,
-`tests/xp-shots.mjs` (shots land in `.reeltest/shots/`).
+`tests/github-test.mjs`, `tests/reel-test.mjs`, `tests/reel-drill.mjs`,
+`tests/contact-test.mjs`, `tests/act1-baseline.mjs`. Screenshot helpers:
+`tests/papers-shots.mjs`, `tests/xp-shots.mjs`, `tests/github-shots.mjs`
+(shots land in `.reeltest/shots/`).
 
 ## The acts
 
@@ -40,8 +41,9 @@ Individual suites: `node tests/papers-test.mjs`, `tests/xp-test.mjs`,
 | 1 | Distributed Systems | 0.02 – 0.20 | headline reveal, system badges |
 | 2 | Technical Expertise | 0.22 – 0.46 | Matter.js physics pool of real brand icons |
 | 2.5 | Project Reel | 0.46 – 0.88 | scroll-scrubbed scene gallery (6 projects) |
-| 3 | Experience & Education | 0.88 – 0.94 | timeline dossier, count-up telemetry |
-| 3.5 | Knowledge Sharing | 0.94 – 0.97 | publications & certifications ledger |
+| 3 | Experience & Education | 0.88 – 0.925 | timeline dossier, count-up telemetry |
+| 3.4 | The Pulse | 0.925 – 0.945 | live GitHub heatmap, streaks, event feed |
+| 3.5 | Knowledge Sharing | 0.945 – 0.97 | publications & certifications ledger |
 | 4 | Connect | 0.97 – 1.0 | transmission terminal, copy-email, replay |
 
 ## Architecture
@@ -57,6 +59,13 @@ Individual suites: `node tests/papers-test.mjs`, `tests/xp-test.mjs`,
   tilt springs, count-ups, spotlight, sparks).
 - **`projects.js`** — reel data + scene builder + drag/keyboard navigation.
   `tests/projects.baseline.js` is its pristine snapshot (used by the drill test).
+- **`github.js`** — Act 3.4 controller: one-shot count-ups, contribution heatmap,
+  event feed/chips, tooltip, pointer spotlight, magnetic springs. Fetches the
+  GitHub REST + jogruber contribution APIs (unauthenticated, CORS-open) and
+  falls back per source to the committed `github-snapshot.json`.
+- **`scripts/fetch-github.mjs`** — refreshes `github-snapshot.json` (runs on
+  `prebuild`; failure-tolerant: keeps the last good snapshot, writes a stub on
+  first failure, never breaks the build).
 
 ### Frame assets
 
@@ -77,6 +86,7 @@ downgraded; quality is the product. Keep Vite's copy-as-is behavior.
 | Command | Purpose |
 |---------|---------|
 | `npm run dev` | dev server with HMR |
-| `npm run build` | production build |
+| `npm run build` | refresh GitHub snapshot, then production build |
+| `npm run snapshot` | only refresh `github-snapshot.json` |
 | `npm run preview` | serve `dist/` |
 | `npm test` | full regression roll-up (dev server required) |

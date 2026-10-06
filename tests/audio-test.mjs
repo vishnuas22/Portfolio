@@ -52,7 +52,12 @@ page.on('pageerror', (e) => consoleErrors.push(String(e)));
 // /resume.pdf 404 is EXPECTED until the real PDF is uploaded — it's the
 // intentional HEAD probe that drives the CTA's graceful pending state.
 page.on('response', (r) => {
-  if (r.status() === 404 && !r.url().endsWith('/resume.pdf')) failed404.push(r.url());
+  if (r.status() !== 404) return;
+  if (r.url().endsWith('/resume.pdf')) return; // intentional HEAD probe → CTA pending state
+  // Same-origin only: external outages (GitHub APIs, third-party services)
+  // are not our assets and must never flake this gate.
+  if (!r.url().startsWith(URL_)) return;
+  failed404.push(r.url());
 });
 
 const probe = () => page.evaluate(() => window.__audioProbe());
@@ -61,6 +66,9 @@ const scrollTo = (y, opts = {}) =>
 
 await page.goto(URL_, { waitUntil: 'networkidle0', timeout: 60000 });
 await page.waitForSelector('#loader.hidden', { timeout: 30000 }).catch(() => {});
+// Act 3.4 (The Pulse) fetches live GitHub data on first approach — keep this
+// suite on the embedded snapshot: zero external requests, zero rate-limit burn.
+await page.evaluate(() => { window.__GH_OFFLINE__ = true; });
 await sleep(1200);
 
 // ---------- 1. boot state ----------

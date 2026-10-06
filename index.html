@@ -74,6 +74,7 @@
       <button class="nav-item-pill" data-target="0.32">Technical Expertise</button>
       <button class="nav-item-pill" data-target="0.49">Projects</button>
       <button class="nav-item-pill" data-target="0.915">Experience</button>
+      <button class="nav-item-pill" data-target="0.935">Pulse</button>
       <button class="nav-item-pill" data-target="0.955">Knowledge</button>
       <button class="nav-item-pill" data-target="0.985">Contact</button>
     </nav>
@@ -421,6 +422,86 @@
     </div>
 
     <!-- ====================================================================
+         ACT 3.4: THE PULSE — LIVE GITHUB ACTIVITY (borderless cinematic
+         session: 366-cell contribution heatmap with column cascade, one-shot
+         count-up telemetry, live event feed, damped-spring magnets — reuses
+         the site's physics language). Username source of truth is
+         GITHUB_USER in main.js; links with data-github-user are re-stamped
+         at boot — see GITHUB USER markers elsewhere in this file.
+         ==================================================================== -->
+    <div id="stage-act34" class="stage-view stage-pulse">
+      <div class="pl-frame">
+        <div class="pl-eyebrow-row">
+          <div class="xmit-eyebrow">
+            <span class="xmit-eyebrow-num">04</span>
+            <span class="xmit-eyebrow-rule"></span>
+            <span>The Pulse</span>
+          </div>
+          <div class="xmit-status">
+            <span class="xmit-status-dot"></span>
+            <span id="pl-status-text">Cached snapshot</span>
+          </div>
+        </div>
+
+        <div class="pl-grid">
+          <div class="pl-copy">
+            <h2 class="pl-headline" id="pl-headline">
+              <span class="pl-line">Still</span>
+              <span class="pl-line"><span class="pl-word" style="--wd:0">Shipping.</span></span>
+            </h2>
+
+            <p class="pl-desc">
+              The last year in public — contributions, streaks, and the repositories behind
+              the work. Pulled live from GitHub, no hand-picked numbers.
+            </p>
+
+            <div class="pl-stats">
+              <div class="pl-stat" data-magnetic style="--sd:0">
+                <span class="pl-stat-val" data-key="contrib" data-count="0">0</span>
+                <span class="pl-stat-txt">Contributions / yr</span>
+              </div>
+              <div class="pl-stat" data-magnetic style="--sd:1">
+                <span class="pl-stat-val" data-key="cur" data-count="0">0</span>
+                <span class="pl-stat-txt">Current Streak</span>
+              </div>
+              <div class="pl-stat" data-magnetic style="--sd:2">
+                <span class="pl-stat-val" data-key="best" data-count="0">0</span>
+                <span class="pl-stat-txt">Longest Streak</span>
+              </div>
+              <div class="pl-stat" data-magnetic style="--sd:3">
+                <span class="pl-stat-val" data-key="days" data-count="0">0</span>
+                <span class="pl-stat-txt">Active Days</span>
+              </div>
+            </div>
+
+            <a class="pl-link" data-github-user href="https://github.com/vishnuas22" target="_blank" rel="noopener" data-magnetic>
+              View full profile <span class="pl-arrow">↗</span>
+            </a>
+          </div>
+
+          <div class="pl-panel">
+            <div class="pl-heat-head">
+              <span class="pl-heat-title">Contribution calendar</span>
+              <span class="pl-heat-count" id="pl-heat-total">—</span>
+            </div>
+            <div class="pl-heat-scroll">
+              <div class="pl-heat" id="pl-heat" role="img" aria-label="GitHub contribution calendar for the last year"></div>
+            </div>
+            <div class="pl-legend" aria-hidden="true">
+              <span>Less</span>
+              <i class="gh-l0"></i><i class="gh-l1"></i><i class="gh-l2"></i><i class="gh-l3"></i><i class="gh-l4"></i>
+              <span>More</span>
+            </div>
+
+            <ul class="pl-feed" id="pl-feed" aria-label="Recent GitHub activity"></ul>
+            <div class="pl-recent" id="pl-recent" aria-label="Recently pushed repositories"></div>
+            <div class="pl-tip" id="pl-tip" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
          ACT 3.5: KNOWLEDGE SHARING — PUBLICATIONS & CREDENTIALS LEDGER
          (borderless cinematic archive: spring-staggered citation cards with
          damped-spring paper tilt, one-shot count-up, copy-citation sparks,
@@ -430,7 +511,7 @@
       <div class="kp-frame">
         <div class="kp-eyebrow-row">
           <div class="xmit-eyebrow">
-            <span class="xmit-eyebrow-num">04</span>
+            <span class="xmit-eyebrow-num">05</span>
             <span class="xmit-eyebrow-rule"></span>
             <span>Knowledge Sharing</span>
           </div>
@@ -526,7 +607,7 @@
         <!-- hairline eyebrow row -->
         <div class="xmit-eyebrow-row">
           <div class="xmit-eyebrow">
-            <span class="xmit-eyebrow-num">05</span>
+            <span class="xmit-eyebrow-num">06</span>
             <span class="xmit-eyebrow-rule"></span>
             <span class="xmit-eyebrow-label">Transmission</span>
           </div>
@@ -566,7 +647,9 @@
                 <span class="xmit-btn-inner">Compose mail</span>
                 <svg class="xmit-btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </a>
-              <a href="#" class="xmit-social" data-magnetic aria-label="GitHub">
+              <!-- GITHUB USER mirror — runtime source of truth is GITHUB_USER
+                   in main.js (this href is re-stamped at boot). -->
+              <a href="https://github.com/vishnuas22" class="xmit-social" data-github-user data-magnetic aria-label="GitHub">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.12 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.14 0 1.54-.02 2.79-.02 3.17 0 .31.21.68.8.56A11.52 11.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
               </a>
               <a href="#" class="xmit-social" data-magnetic aria-label="LinkedIn">

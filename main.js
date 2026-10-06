@@ -2,6 +2,7 @@ import Lenis from 'lenis';
 import Matter from 'matter-js';
 import { initProjectReel } from './projects.js';
 import { initSoundscape } from './audio.js';
+import { initGithubAct } from './github.js';
 
 const TOTAL_FRAMES = 472;
 const MAX_CONCURRENT = 12;
@@ -37,6 +38,11 @@ const navItemPills = document.querySelectorAll('.nav-item-pill');
 // When the temporary address is replaced: change this + the static mirrors
 // flagged "CONTACT EMAIL" in index.html (JSON-LD + copy-button text node).
 const CONTACT_EMAIL = 'thedataghost8@gmail.com';
+
+// --- GitHub identity — one constant, stamped everywhere at boot -------------
+// When the handle is replaced: change this + the static mirrors flagged
+// "GITHUB USER" in index.html (Pulse CTA + Act 4 social icon).
+const GITHUB_USER = 'vishnuas22';
 
 function hydrateContactEmail() {
   document.querySelectorAll('[data-email]').forEach((el) => {
@@ -99,6 +105,7 @@ const stageAct1 = document.getElementById('stage-act1');
 const stageAct2 = document.getElementById('stage-act2');
 const stageAct3 = document.getElementById('stage-act3');
 const stageAct35 = document.getElementById('stage-act35');
+const stageAct34 = document.getElementById('stage-act34');
 const stageAct4 = document.getElementById('stage-act4');
 const stageAct25 = document.getElementById('stage-act2-5');
 
@@ -118,6 +125,7 @@ let prevTargetProgress = 0;
 let rewindPhaseUntil = 0;    // while future-dated: telemetry phase reads "⏪ Rewinding…"
 let connectAct = null;       // Act 4 controller, assigned during init
 let papersAct = null;        // Act 3.5 controller, assigned during init
+let pulseAct = null;         // Act 3.4 controller, assigned during init
 let xpAct = null;            // Act 3 controller, assigned during init
 let lastNavIndex = -1;       // last nav pill index written (aria/current sync)
 
@@ -483,13 +491,18 @@ function updateNarrativeLayers(progress, targetIndex) {
     }
   }
 
-  // Act 3: Experience & Education — The Service Record (0.88 - 0.94)
-  const isAct3 = progress >= 0.88 && progress < 0.94;
+  // Act 3: Experience & Education — The Service Record (0.88 - 0.925)
+  const isAct3 = progress >= 0.88 && progress < 0.925;
   if (stageAct3) stageAct3.classList.toggle('stage-active', isAct3);
   if (xpAct) xpAct.setActive(isAct3);
 
-  // Act 3.5: Knowledge Sharing — Publications & Credentials (0.94 - 0.97)
-  const isAct35 = progress >= 0.94 && progress < 0.97;
+  // Act 3.4: The Pulse — Live GitHub Activity (0.925 - 0.945)
+  const isAct34 = progress >= 0.925 && progress < 0.945;
+  if (stageAct34) stageAct34.classList.toggle('stage-active', isAct34);
+  if (pulseAct) pulseAct.setActive(isAct34);
+
+  // Act 3.5: Knowledge Sharing — Publications & Credentials (0.945 - 0.97)
+  const isAct35 = progress >= 0.945 && progress < 0.97;
   if (stageAct35) stageAct35.classList.toggle('stage-active', isAct35);
   if (papersAct) papersAct.setActive(isAct35);
 
@@ -510,15 +523,18 @@ function updateNarrativeLayers(progress, targetIndex) {
   } else if (progress < 0.88) {
     phaseName = 'Project Reel';
     activeNavIndex = 2;
-  } else if (progress < 0.94) {
+  } else if (progress < 0.925) {
     phaseName = 'Experience & Education';
     activeNavIndex = 3;
+  } else if (progress < 0.945) {
+    phaseName = 'Pulse — Live GitHub';
+    activeNavIndex = 4;
   } else if (progress < 0.97) {
     phaseName = 'Knowledge Sharing';
-    activeNavIndex = 4;
+    activeNavIndex = 5;
   } else {
     phaseName = 'Connect Terminal';
-    activeNavIndex = 5;
+    activeNavIndex = 6;
   }
 
   // Cinematic rewind label overrides the phase readout until the scroll
@@ -1250,7 +1266,9 @@ function initXpAct() {
   function loop() {
     if (!active) return;
     if (!reduceMotion) {
-      const p3Target = Math.min(1, Math.max(0, (targetProgress - 0.88) / 0.05));
+      // Choreography completes at scroll 0.92 (Act 3's window now ends 0.925,
+      // where Act 3.4 The Pulse takes over); xp-test asserts p3 > 0.4 at 0.915.
+      const p3Target = Math.min(1, Math.max(0, (targetProgress - 0.88) / 0.04));
       p3 += (p3Target - p3) * 0.09;
       if (Math.abs(p3Target - p3) < 0.001) p3 = p3Target;
       stage.style.setProperty('--act3-p', p3.toFixed(4));
@@ -1509,8 +1527,9 @@ function initPapersAct() {
     if (!active) return;
     if (!reduceMotion) {
       // Choreography completes at scroll 0.955 (mid-act dwell tail, mirrors
-      // Act 3's 0.93 completion) — papers-test asserts p35 > 0.9 at 0.955.
-      const p35Target = Math.min(1, Math.max(0, (targetProgress - 0.94) / 0.015));
+      // Act 3's completion) — papers-test asserts p35 > 0.9 at 0.955.
+      // Window starts at 0.945 (Act 3.4's exit edge).
+      const p35Target = Math.min(1, Math.max(0, (targetProgress - 0.945) / 0.010));
       p35 += (p35Target - p35) * 0.09;
       if (Math.abs(p35Target - p35) < 0.001) p35 = p35Target;
       stage.style.setProperty('--act35-p', p35.toFixed(4));
@@ -1982,6 +2001,11 @@ initNavPills();
 connectAct = initConnectAct();
 xpAct = initXpAct();
 papersAct = initPapersAct();
+pulseAct = initGithubAct({
+  stage: stageAct34,
+  user: GITHUB_USER,
+  getProgress: () => targetProgress,
+});
 
 // The Project Reel — scroll-scrubbed scene gallery
 function scrollToActProgress(p) {

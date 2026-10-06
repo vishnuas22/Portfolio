@@ -35,6 +35,9 @@ page.on('response', (r) => { if (r.status() === 404) failed404.push(r.url()); })
 
 await page.goto(URL_, { waitUntil: 'networkidle0', timeout: 60000 });
 await page.waitForSelector('#loader.hidden', { timeout: 30000 }).catch(() => {});
+// Act 3.4 (The Pulse) fetches live GitHub data on first approach — keep this
+// suite on the embedded snapshot: zero external requests, zero rate-limit burn.
+await page.evaluate(() => { window.__GH_OFFLINE__ = true; });
 await sleep(1200);
 
 async function jumpTo(p) {

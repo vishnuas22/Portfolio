@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/fetch-github.mjs",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node tests/run-all.mjs"
+    "test": "node tests/run-all.mjs",
+    "snapshot": "node scripts/fetch-github.mjs"
   },
   "devDependencies": {
     "puppeteer-core": "^25.11.0",
