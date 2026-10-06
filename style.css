@@ -2755,7 +2755,7 @@ html.js body.is-ready .hero-scroll-cue {
   width: 10px;
   height: 10px;
   border-radius: 2.5px;
-  background: rgba(255, 255, 255, 0.055);
+  background: #161b22; /* L0 fallback until the gh-l* class hydrates */
   opacity: 0;
   transform: scale(0.5);
   transition:
@@ -2770,12 +2770,14 @@ html.js body.is-ready .hero-scroll-cue {
   transform: scale(1);
 }
 
-/* amber/gold level ramp — brand-tinted contribution intensity */
-.gh-l0 { background: rgba(255, 255, 255, 0.055); }
-.gh-l1 { background: rgba(253, 214, 99, 0.22); }
-.gh-l2 { background: rgba(253, 214, 99, 0.45); }
-.gh-l3 { background: rgba(249, 171, 0, 0.72); }
-.gh-l4 { background: #f9ab02; box-shadow: 0 0 6px rgba(249, 171, 0, 0.35); }
+/* GitHub dark-theme contribution ramp — official Primer calendar tokens
+   (--color-calendar-graph-day-L*-bg, dark): #161b22 / #0e4429 / #006d32 /
+   #26a641 / #39d353. L4 keeps a subtle green glow (act's cinematic language). */
+.gh-l0 { background: #161b22; }
+.gh-l1 { background: #0e4429; }
+.gh-l2 { background: #006d32; }
+.gh-l3 { background: #26a641; }
+.gh-l4 { background: #39d353; box-shadow: 0 0 6px rgba(57, 211, 83, 0.4); }
 
 .pl-legend {
   display: flex;
