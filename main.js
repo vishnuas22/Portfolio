@@ -37,7 +37,7 @@ const navItemPills = document.querySelectorAll('.nav-item-pill');
 // --- Contact mailbox — one constant, stamped everywhere at boot -------------
 // When the temporary address is replaced: change this + the static mirrors
 // flagged "CONTACT EMAIL" in index.html (JSON-LD + copy-button text node).
-const CONTACT_EMAIL = 'thedataghost8@gmail.com';
+const CONTACT_EMAIL = 'vishnuofficial18@gmail.com';
 
 // --- GitHub identity — one constant, stamped everywhere at boot -------------
 // When the handle is replaced: change this + the static mirrors flagged
