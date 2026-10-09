@@ -2,7 +2,8 @@
 // THE PROJECT REEL — data, scene builder & controller (scroll-driven)
 // ==========================================================================
 // To add a project: append an object here and drop a poster at
-// /public/projects/<id>.svg (or set `image: '<file>'`). Scenes, dots,
+// /public/projects/<id>.svg (or set `image: '<file>'` — a screenshot in
+// /public/images). Scenes, dots,
 // counter, keyboard nav and drag physics all derive automatically.
 // Skill chips: `icon` = file in /public/icons, or `glyph` + `tint` for
 // technologies with no official brand mark.
@@ -40,6 +41,7 @@ const PROJECTS_DATA = [
     subtitle: 'Adaptive Personalized Learning AI Engine',
     period: 'Emotion-Aware · RAG · Multi-Agent',
     hue: '#c58af9',
+    image: 'masterx.jpeg',
     blurb: 'A sophisticated emotion-aware learning platform with custom ML models — real-time cognitive-load detection prevents overwhelm while adaptive difficulty keeps every learner in flow.',
     highlights: [
       'Real-time emotion & cognitive-load detection',
@@ -101,6 +103,7 @@ const PROJECTS_DATA = [
     subtitle: 'AI-Powered Art Generation Platform',
     period: 'Jun 2024 — Jul 2024',
     hue: '#fdd663',
+    image: 'radgen.jpeg',
     blurb: 'A Stable Diffusion art platform built on PyTorch, Hugging Face and Transformers — text-to-image, image-to-image and inpainting, with encoder-decoder and UNet pipelines for image quality.',
     highlights: [
       '95% user satisfaction across generation modes',
@@ -127,6 +130,7 @@ const PROJECTS_DATA = [
     subtitle: 'Strategic Market Intelligence',
     period: 'May 2024 — Jun 2024',
     hue: '#81c995',
+    image: 'trends.jpeg',
     blurb: 'Real-time and historical search behavior from 2004 to today — 80+ keywords across 60+ countries, turned into dashboards that drive strategic business decisions.',
     highlights: [
       '80+ keywords, 60+ countries, two decades of Trends data',
@@ -153,6 +157,7 @@ const PROJECTS_DATA = [
     subtitle: 'E-commerce Intelligence at Scale',
     period: 'Feb 2024 — Apr 2024',
     hue: '#78d9ec',
+    image: 'segmentation.jpeg',
     blurb: 'A million synthetic e-commerce shoppers, segmented with RFM, PCA and K-Means — then valued with an ensemble that lifted prediction accuracy to 94.6%.',
     highlights: [
       '1,000,000-user dataset curated from GPT, Kaggle & public sources',
@@ -213,7 +218,7 @@ export function initProjectReel({ stage, scrollToProgress }) {
 
     const num = String(i + 1).padStart(2, '0');
     const poster = `/projects/${p.id}.svg`;
-    const stillSrc = p.image ? `/projects/${p.image}` : poster;
+    const stillSrc = p.image ? `/images/${p.image}` : poster;
 
     const metricsHTML = p.metrics && p.metrics.length
       ? `<div class="scene-metrics">${p.metrics.map((m, j) => `
@@ -236,8 +241,10 @@ export function initProjectReel({ stage, scrollToProgress }) {
       <div class="scene-visual">
         <div class="still-wrap">
           <div class="still-tilt">
-            <img class="still-img" src="${stillSrc}" alt="${p.title} — project still" loading="lazy" draggable="false"
-              onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='${poster}';}else{const f=document.createElement('div');f.className='still-fallback';f.textContent='${p.title.charAt(0)}';f.style.background='radial-gradient(circle at 40% 30%, color-mix(in srgb, var(--sc-hue, #8ab4f8) 30%, #0b0d12), #0b0d12)';this.replaceWith(f);}">
+            <div class="still-frame">
+              <img class="still-img" src="${stillSrc}" alt="${p.title} — project still" loading="lazy" draggable="false"
+                onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='${poster}';}else{const f=document.createElement('div');f.className='still-fallback';f.textContent='${p.title.charAt(0)}';f.style.background='radial-gradient(circle at 40% 30%, color-mix(in srgb, var(--sc-hue, #8ab4f8) 30%, #0b0d12), #0b0d12)';this.replaceWith(f);}">
+            </div>
             <span class="still-glow" style="background: radial-gradient(circle at 50% 50%, ${p.hue}, transparent 70%)"></span>
           </div>
           <div class="still-caption"><span>${p.title} · ${p.subtitle}</span><span class="still-frame-tag">SCENE ${num}</span></div>

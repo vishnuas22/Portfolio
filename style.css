@@ -4040,6 +4040,20 @@ html.js body.is-ready .hero-scroll-cue {
     animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
   }
+
+  /* Reel stills land as a static composition: no wipe, no drift, no sweep.
+     Specificity matches the .is-active animation rules so this wins. */
+  .reel-scene.is-active .still-frame,
+  .reel-scene.is-active .still-img {
+    animation: none !important;
+    filter: none;
+    clip-path: none;
+    transform: none;
+  }
+
+  .reel-scene.is-active .still-frame::after {
+    animation: none !important;
+  }
 }
 
 /* ==========================================================================
@@ -4334,14 +4348,47 @@ html.js body.is-ready .hero-scroll-cue {
   will-change: transform;
 }
 
+/* The glass: hue-tinted hairline frame + inset top highlight + deep seat
+   shadow. Owns overflow so the reveal wipe, Ken Burns zoom and specular
+   sweep all clip to the rounded corners. */
+.still-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 26px;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--sc-hue, #8ab4f8) 38%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 34px 90px rgba(0, 0, 0, 0.62),
+    0 10px 28px rgba(0, 0, 0, 0.5);
+}
+
+/* Specular sweep — rests off-frame left, crosses once per activation. */
+.still-frame::after {
+  content: '';
+  position: absolute;
+  top: -30%;
+  bottom: -30%;
+  left: 0;
+  width: 42%;
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 35%,
+    rgba(255, 255, 255, 0.32) 50%,
+    rgba(255, 255, 255, 0.1) 65%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-160%) skewX(-14deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
 .still-img {
   width: 100%;
   aspect-ratio: 16 / 10;
   object-fit: cover;
-  border-radius: 26px;
   display: block;
   background: #0b0d12;
-  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.62), 0 10px 28px rgba(0, 0, 0, 0.5);
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -4366,6 +4413,9 @@ html.js body.is-ready .hero-scroll-cue {
   font-weight: 500;
   color: var(--text-muted);
   letter-spacing: 0.02em;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s var(--ease-google) 0.55s, transform 0.6s var(--ease-google) 0.55s;
 }
 
 /* Graceful fallback when a project has no photo AND no poster yet */
@@ -4379,7 +4429,6 @@ html.js body.is-ready .hero-scroll-cue {
   font-size: clamp(80px, 16vh, 180px);
   font-weight: 700;
   color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.62), 0 10px 28px rgba(0, 0, 0, 0.5);
 }
 
 .still-frame-tag {
@@ -4450,6 +4499,47 @@ html.js body.is-ready .hero-scroll-cue {
 .reel-scene.is-active .scene-metric { transition-delay: var(--d, 0.44s); opacity: 1; transform: none; }
 .reel-scene.is-active .mini-bead { transition-delay: var(--d, 0.5s); opacity: 1; transform: none; }
 .reel-scene.is-active .mini-bead:hover { transform: translateY(-3px) scale(1.1); }
+.reel-scene.is-active .still-caption { opacity: 1; transform: none; }
+
+/* ---- premium still: reveal → Ken Burns → specular sweep (all one-shot) ----
+   Base state = final frame; only .is-active animates, so dropping .is-active
+   returns to a stable image — no visual jump while the scene fades out. */
+@keyframes stillReveal {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: scale(1.07);
+    filter: blur(14px);
+    opacity: 0.35;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    transform: scale(1);
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+@keyframes stillZoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.045); }
+}
+
+@keyframes stillSweep {
+  from { transform: translateX(-160%) skewX(-14deg); }
+  to { transform: translateX(420%) skewX(-14deg); }
+}
+
+.reel-scene.is-active .still-frame {
+  animation: stillReveal 0.95s 0.06s var(--ease-google) both;
+}
+
+.reel-scene.is-active .still-img {
+  animation: stillZoom 16s 1s ease-in-out infinite alternate;
+}
+
+.reel-scene.is-active .still-frame::after {
+  animation: stillSweep 1.2s 0.95s var(--ease-google);
+}
 
 /* ---- responsive ---- */
 @media (max-width: 900px) {
@@ -4477,9 +4567,12 @@ html.js body.is-ready .hero-scroll-cue {
     display: none;
   }
 
+  .still-frame {
+    border-radius: 20px;
+  }
+
   .still-img {
     aspect-ratio: 16 / 9;
-    border-radius: 20px;
   }
 
   .mini-bead {
