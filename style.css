@@ -4368,25 +4368,18 @@ html.js body.is-ready .hero-scroll-cue {
   border-radius: var(--frame-r);
   background-origin: border-box;
   background-repeat: no-repeat;
-  background-position:
-    var(--tl-x) calc(var(--bezel) / 2 - var(--tl-d) / 2),
-    calc(var(--tl-x) + var(--tl-gap)) calc(var(--bezel) / 2 - var(--tl-d) / 2),
-    calc(var(--tl-x) + var(--tl-gap) * 2) calc(var(--bezel) / 2 - var(--tl-d) / 2),
-    calc(50% - var(--cam-d) / 2) calc(var(--bezel) / 2 - var(--cam-d) / 2),
-    0 0;
-  background-size:
-    var(--tl-d) var(--tl-d),
-    var(--tl-d) var(--tl-d),
-    var(--tl-d) var(--tl-d),
-    var(--cam-d) var(--cam-d),
-    100% 100%;
+  background-position: 0 0;
+  background-size: 100% 100%;
   background-image:
-    /* traffic lights - close / minimise / zoom */
-    radial-gradient(circle closest-side, #ff5f57 calc(100% - 1.5px), rgba(140, 24, 18, 0.5) 100%),
-    radial-gradient(circle closest-side, #febc2e calc(100% - 1.5px), rgba(150, 104, 12, 0.45) 100%),
-    radial-gradient(circle closest-side, #28c940 calc(100% - 1.5px), rgba(12, 112, 32, 0.5) 100%),
-    /* FaceTime camera */
-    radial-gradient(circle closest-side, #46484d calc(100% - 2px), rgba(0, 0, 0, 0.65) 100%),
+    /* macOS traffic lights - close / minimise / zoom. All four dots live in
+       one full-frame layer: an explicit circle radius + centre keeps them
+       true circles at any bezel size, and the transparent tail stop stops the
+       ring colour bleeding past the ending shape (which squared them off). */
+    radial-gradient(circle calc(var(--tl-d) / 2) at calc(var(--tl-x) + var(--tl-d) / 2) calc(var(--bezel) / 2), #ff5f57 calc(100% - 1.5px), rgba(140, 24, 18, 0.5) calc(100% - 0.5px), rgba(140, 24, 18, 0) 100%),
+    radial-gradient(circle calc(var(--tl-d) / 2) at calc(var(--tl-x) + var(--tl-gap) + var(--tl-d) / 2) calc(var(--bezel) / 2), #febc2e calc(100% - 1.5px), rgba(150, 104, 12, 0.45) calc(100% - 0.5px), rgba(150, 104, 12, 0) 100%),
+    radial-gradient(circle calc(var(--tl-d) / 2) at calc(var(--tl-x) + var(--tl-gap) * 2 + var(--tl-d) / 2) calc(var(--bezel) / 2), #28c940 calc(100% - 1.5px), rgba(12, 112, 32, 0.5) calc(100% - 0.5px), rgba(12, 112, 32, 0) 100%),
+    /* FaceTime camera, dead-centre on the frame axis */
+    radial-gradient(circle calc(var(--cam-d) / 2) at 50% calc(var(--bezel) / 2), #46484d calc(100% - 2px), rgba(0, 0, 0, 0.65) calc(100% - 0.5px), rgba(0, 0, 0, 0) 100%),
     /* aluminium shell - lit from above (CSSDevices silver palette) */
     linear-gradient(180deg, #eeeff2 0%, #e0e1e5 28%, #d6d5da 55%, #c9cacd 80%, #bdbfbe 100%);
   box-shadow:
