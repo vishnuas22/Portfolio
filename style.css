@@ -4348,18 +4348,71 @@ html.js body.is-ready .hero-scroll-cue {
   will-change: transform;
 }
 
-/* The glass: hue-tinted hairline frame + inset top highlight + deep seat
-   shadow. Owns overflow so the reveal wipe, Ken Burns zoom and specular
-   sweep all clip to the rounded corners. */
+/* The device: a real silver iPad - top-lit aluminium shell drawn as a
+   border-box gradient behind a transparent border, macOS traffic lights +
+   FaceTime camera centred in the top band, black display-glass edge seated
+   over the photo, machined rim + deep seat shadow. Inner screen radius =
+   --frame-r minus --bezel, and because overflow clips at the padding edge,
+   the band paints over the Ken Burns zoom so the bezel can never be eaten.
+   Owns overflow so the reveal wipe, zoom and sweep clip to the glass. */
 .still-frame {
+  --bezel: clamp(14px, 1.5vw, 20px);
+  --frame-r: 34px;
+  --tl-d: clamp(9px, calc(var(--bezel) * 0.55), 12px);
+  --tl-gap: calc(var(--tl-d) + 7px);
+  --tl-x: calc(var(--frame-r) + 6px);
+  --cam-d: calc(var(--bezel) * 0.4);
   position: relative;
   overflow: hidden;
-  border-radius: 26px;
+  border: var(--bezel) solid transparent;
+  border-radius: var(--frame-r);
+  background-origin: border-box;
+  background-repeat: no-repeat;
+  background-position:
+    var(--tl-x) calc(var(--bezel) / 2 - var(--tl-d) / 2),
+    calc(var(--tl-x) + var(--tl-gap)) calc(var(--bezel) / 2 - var(--tl-d) / 2),
+    calc(var(--tl-x) + var(--tl-gap) * 2) calc(var(--bezel) / 2 - var(--tl-d) / 2),
+    calc(50% - var(--cam-d) / 2) calc(var(--bezel) / 2 - var(--cam-d) / 2),
+    0 0;
+  background-size:
+    var(--tl-d) var(--tl-d),
+    var(--tl-d) var(--tl-d),
+    var(--tl-d) var(--tl-d),
+    var(--cam-d) var(--cam-d),
+    100% 100%;
+  background-image:
+    /* traffic lights - close / minimise / zoom */
+    radial-gradient(circle closest-side, #ff5f57 calc(100% - 1.5px), rgba(140, 24, 18, 0.5) 100%),
+    radial-gradient(circle closest-side, #febc2e calc(100% - 1.5px), rgba(150, 104, 12, 0.45) 100%),
+    radial-gradient(circle closest-side, #28c940 calc(100% - 1.5px), rgba(12, 112, 32, 0.5) 100%),
+    /* FaceTime camera */
+    radial-gradient(circle closest-side, #46484d calc(100% - 2px), rgba(0, 0, 0, 0.65) 100%),
+    /* aluminium shell - lit from above (CSSDevices silver palette) */
+    linear-gradient(180deg, #eeeff2 0%, #e0e1e5 28%, #d6d5da 55%, #c9cacd 80%, #bdbfbe 100%);
   box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--sc-hue, #8ab4f8) 38%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    /* machined outer rim */
+    0 0 0 1px rgba(0, 0, 0, 0.55),
     0 34px 90px rgba(0, 0, 0, 0.62),
     0 10px 28px rgba(0, 0, 0, 0.5);
+}
+
+/* Screen-glass overlay: the display edge + seating shade must sit ON TOP of
+   the image (inset shadows on .still-frame would paint beneath it). Radius
+   matches the padding box exactly: --frame-r minus --bezel. */
+.still-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--frame-r) - var(--bezel));
+  box-shadow:
+    /* top specular catch on the glass (painted above the black edge) */
+    inset 0 1.5px 0 0 rgba(255, 255, 255, 0.3),
+    /* display glass edge under the aluminium */
+    inset 0 0 0 3px #08090d,
+    /* screen seating shade - overhead gallery light */
+    inset 0 12px 22px -14px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* Specular sweep — rests off-frame left, crosses once per activation. */
@@ -4418,11 +4471,12 @@ html.js body.is-ready .hero-scroll-cue {
   transition: opacity 0.5s var(--ease-google) 0.55s, transform 0.6s var(--ease-google) 0.55s;
 }
 
-/* Graceful fallback when a project has no photo AND no poster yet */
+/* Graceful fallback when a project has no photo AND no poster yet.
+   Clipped by .still-frame — inner radius follows the bezel vars. */
 .still-fallback {
   width: 100%;
   aspect-ratio: 16 / 10;
-  border-radius: 26px;
+  border-radius: calc(var(--frame-r, 30px) - var(--bezel, 10px));
   display: grid;
   place-items: center;
   font-family: var(--font-head);
@@ -4568,7 +4622,8 @@ html.js body.is-ready .hero-scroll-cue {
   }
 
   .still-frame {
-    border-radius: 20px;
+    --bezel: 14px;
+    --frame-r: 22px;
   }
 
   .still-img {
