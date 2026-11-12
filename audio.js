@@ -97,6 +97,10 @@ export function initSoundscape({ lenis, prefersReducedMotion }) {
     if (!toggle) return;
     toggle.classList.toggle('is-muted', muted);
     toggle.setAttribute('aria-pressed', String(!muted));
+    toggle.setAttribute(
+      'aria-label',
+      muted ? 'Turn background music on' : 'Turn background music off'
+    );
   }
 
   function syncTourUI() {

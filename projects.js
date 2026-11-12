@@ -274,6 +274,7 @@ export function initProjectReel({ stage, scrollToProgress }) {
   const tilt = { x: 0, y: 0, tx: 0, ty: 0 };
   let tiltRaf = null;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mobileReelQuery = window.matchMedia('(max-width: 900px)');
 
   function goToScene(i) {
     const c = clamp(i, 0, N - 1);
@@ -312,6 +313,22 @@ export function initProjectReel({ stage, scrollToProgress }) {
 
   // ----- render: reel pan + per-scene fade/parallax -----
   function render() {
+    if (mobileReelQuery.matches) {
+      // Phone layout: stick the nearest scene to the viewport centre instead
+      // of translating the whole track. No scene is ever half-offscreen, and
+      // the still can sit behind the copy as a full-bleed backdrop.
+      const idx = clamp(Math.round(displayPos), 0, N - 1);
+      track.style.transform = 'translate3d(0,0,0)';
+      scenes.forEach(({ el, stillWrap }, i) => {
+        const on = i === idx;
+        el.style.visibility = on ? 'visible' : 'hidden';
+        el.style.opacity = on ? '1' : '0';
+        stillWrap.style.transform = 'none';
+      });
+      setActiveScene(idx);
+      return;
+    }
+
     track.style.transform = `translate3d(${(-displayPos * 100).toFixed(4)}%,0,0)`;
     scenes.forEach(({ el, stillWrap }, i) => {
       const d = i - displayPos;

@@ -5,16 +5,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vishnu AS — AI/ML Engineer</title>
-  <meta name="description" content="Cinematic portfolio of Vishnu AS — AI/ML engineer building autonomous systems, generative AI, and production ML pipelines. Projects, research publications, experience, and contact." />
+  <meta name="description" content="Vishnu AS | Alpha Portfolio — AI/ML engineer building autonomous systems, generative AI, and production ML pipelines. Projects, research publications, experience, and contact." />
   <meta name="color-scheme" content="dark" />
   <meta name="theme-color" content="#000000" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preload" as="image" href="/hero/hero_landing.jpg" fetchpriority="high" />
 
   <!-- Open Graph / social sharing -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Vishnu AS — AI/ML Engineer" />
   <meta property="og:title" content="Vishnu AS — AI/ML Engineer" />
-  <meta property="og:description" content="Cinematic portfolio of Vishnu AS — AI/ML engineer building autonomous systems, generative AI, and production ML pipelines." />
+  <meta property="og:description" content="Vishnu AS | Alpha Portfolio — AI/ML engineer building autonomous systems, generative AI, and production ML pipelines." />
   <!-- TODO(og-url): when the production domain is final, make og:image an
        absolute URL (https://<domain>/hero/hero_landing.jpg) — most social
        scrapers reject relative image URLs. No twitter:* card tags: there is
@@ -40,7 +41,8 @@
       "@type": "Person",
       "name": "Vishnu AS",
       "jobTitle": "AI/ML Engineer",
-      "email": "mailto:vishnuofficial18@gmail.com",
+      "email": "vishnuofficial18@gmail.com",
+      "sameAs": ["https://github.com/vishnuas22"],
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Kochi",
@@ -53,7 +55,7 @@
 </head>
 
 <body>
-  <a class="skip-link" href="#scroll-wrapper">Skip to content</a>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
   <!-- Fixed Cinematic Background Canvas -->
   <canvas id="canvas" aria-hidden="true"></canvas>
@@ -62,57 +64,42 @@
   <header class="top-nav-bar">
     <div class="nav-brand">
       <a href="#hero" class="brand-link">
-        <span class="brand-dot"></span>
         <span class="brand-name">Vishnu AS</span>
-        <span class="brand-tag">AI/ML</span>
       </a>
     </div>
 
     <!-- Clean Navigation Pills -->
-    <nav class="nav-pill-group" aria-label="Primary">
-      <button class="nav-item-pill active" data-target="0.08" aria-current="true">Systems</button>
-      <button class="nav-item-pill" data-target="0.32">Technical Expertise</button>
-      <button class="nav-item-pill" data-target="0.49">Projects</button>
-      <button class="nav-item-pill" data-target="0.915">Experience</button>
-      <button class="nav-item-pill" data-target="0.935">Github</button>
-      <button class="nav-item-pill" data-target="0.955">Knowledge</button>
-      <button class="nav-item-pill" data-target="0.985">Contact</button>
+    <nav id="primary-nav" class="nav-pill-group" aria-label="Primary">
+      <button class="nav-item-pill active" type="button" data-target="0.08" aria-current="true">Systems</button>
+      <button class="nav-item-pill" type="button" data-target="0.32">Technical Expertise</button>
+      <button class="nav-item-pill" type="button" data-target="0.49">Projects</button>
+      <button class="nav-item-pill" type="button" data-target="0.915">Experience</button>
+      <button class="nav-item-pill" type="button" data-target="0.935">GitHub</button>
+      <button class="nav-item-pill" type="button" data-target="0.955">Knowledge</button>
+      <button class="nav-item-pill" type="button" data-target="0.985">Contact</button>
     </nav>
 
     <div class="nav-status">
-      <span class="status-dot"></span>
-      <span class="status-label">Available for Roles</span>
-      <button id="sound-toggle" class="sound-toggle" type="button" aria-pressed="true" aria-label="Background music">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span class="status-label" aria-hidden="true">Available for Roles</span>
+      <span class="sr-only">Available for roles</span>
+      <button id="nav-menu-toggle" class="nav-menu-toggle" type="button"
+        aria-expanded="false" aria-controls="primary-nav" aria-label="Open navigation">
+        <span class="nav-menu-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+      <button id="sound-toggle" class="sound-toggle" type="button" aria-pressed="true" aria-label="Turn background music off">
         <span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i></span>
         <span class="sound-label">Sound</span>
       </button>
     </div>
   </header>
 
-  <!-- Bottom Letterbox Margin: Live Telemetry Dock (decorative readout) -->
-  <aside class="bottom-telemetry-bar" aria-hidden="true">
-    <div class="telemetry-pill">
-      <span class="rec-indicator"></span>
-      <span id="telemetry-frame">Frame 001 / 472</span>
-    </div>
-
-    <div class="telemetry-pill scrub-pill">
-      <span class="telemetry-title">Scrub</span>
-      <div class="telemetry-bar-track">
-        <div id="telemetry-progress-fill" class="telemetry-bar-fill"></div>
-      </div>
-      <span id="telemetry-pct">0%</span>
-    </div>
-
-    <div class="telemetry-pill phase-pill">
-      <span id="telemetry-phase">Prologue</span>
-    </div>
-  </aside>
-
+  <main id="main-content" tabindex="-1">
+  <div id="act-announcer" class="sr-only" role="status" aria-live="polite"></div>
   <!-- Hero Landing Section (Act 0) — title card -->
   <section id="hero" class="hero-section">
     <img id="hero-img" src="/hero/hero_landing.jpg" alt="Vishnu AS - AI/ML Engineer" class="hero-img"
-      fetchpriority="high" decoding="async"
+      width="2891" height="2160" fetchpriority="high" decoding="async"
       onerror="this.style.display='none'" />
     <div class="hero-scrim" aria-hidden="true"></div>
     <div class="hero-grain" aria-hidden="true"></div>
@@ -121,7 +108,7 @@
       <h1 class="sr-only">Vishnu AS</h1>
       <p class="hero-kicker">
         <span class="kicker-rule" aria-hidden="true"></span>
-        AI Arena · Portfolio 2026
+        Portfolio 2026
       </p>
       <p class="hero-role">
         <span class="sr-only">AI/ML Engineer · Data Scientist · Generative AI Engineer · Applied Researcher</span>
@@ -182,10 +169,10 @@
           <span>Core Engineering Focus</span>
         </div>
 
-        <h1 class="headline-display">
+        <h2 class="headline-display">
           Autonomous Cognition<br />
           <span class="gradient-text">At Enterprise Scale.</span>
-        </h1>
+        </h2>
 
         <p class="body-description">
           Designing the computational backbone for modern AI systems. Specializing in high-throughput LLM serving,
@@ -225,7 +212,7 @@
         </div>
 
         <!-- Mastery HUD: exploration ring, Google-Fit style -->
-        <div class="xp-hud" title="Skills you've picked up at least once">
+        <div class="xp-hud" role="status" aria-live="polite" aria-atomic="true" title="Skills you've picked up at least once">
           <svg class="xp-ring" width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
             <circle class="xp-ring-track" cx="23" cy="23" r="18"></circle>
             <circle id="xp-ring-fill" class="xp-ring-fill" cx="23" cy="23" r="18"></circle>
@@ -292,6 +279,7 @@
          ==================================================================== -->
     <div id="stage-act2-5" class="stage-view stage-reel">
       <div class="reel-head">
+        <h2 class="sr-only">Selected Work — The Project Reel</h2>
         <div class="eyebrow-pill">
           <span class="eyebrow-dot"></span>
           <span>Selected Work — The Project Reel</span>
@@ -316,7 +304,7 @@
       <div class="reel-viewport">
         <div class="reel-track"></div>
         <div class="reel-progress"><div class="reel-progress-fill"></div></div>
-        <div class="reel-hint">Drag · Scroll · Arrow keys</div>
+
       </div>
     </div>
 
@@ -434,7 +422,7 @@
           <div class="xmit-eyebrow">
             <span class="xmit-eyebrow-num">04</span>
             <span class="xmit-eyebrow-rule"></span>
-            <span>Github</span>
+            <span>GitHub</span>
           </div>
           <div class="xmit-status">
             <span class="xmit-status-dot"></span>
@@ -483,9 +471,15 @@
               <span class="pl-heat-title">Contribution calendar</span>
               <span class="pl-heat-count" id="pl-heat-total">—</span>
             </div>
-            <div class="pl-heat-scroll">
+            <div class="pl-heat-scroll" tabindex="0" role="region"
+              aria-label="GitHub contribution calendar for the last year. Scroll horizontally or use the arrow keys to explore."
+              aria-describedby="pl-heat-desc">
+              <div class="pl-heat-months" id="pl-heat-months" aria-hidden="true"></div>
               <div class="pl-heat" id="pl-heat" role="img" aria-label="GitHub contribution calendar for the last year"></div>
             </div>
+            <p id="pl-heat-desc" class="sr-only">
+              Each square is one day. Darker green means more contributions. Use the left and right arrow keys to scroll the calendar.
+            </p>
             <div class="pl-legend" aria-hidden="true">
               <span>Less</span>
               <i class="gh-l0"></i><i class="gh-l1"></i><i class="gh-l2"></i><i class="gh-l3"></i><i class="gh-l4"></i>
@@ -531,24 +525,8 @@
               Research published and credentials earned — the artifacts behind the practice,
               cited and verifiable.
             </p>
-
-            <div class="kp-stats">
-              <div class="kp-stat" data-magnetic style="--sd:0">
-                <span class="kp-stat-val" data-count="2" data-pad="2">02</span>
-                <span class="kp-stat-txt">Publications</span>
-              </div>
-              <div class="kp-stat" data-magnetic style="--sd:1">
-                <span class="kp-stat-val" data-count="2" data-pad="2">02</span>
-                <span class="kp-stat-txt">Certifications</span>
-              </div>
-              <div class="kp-stat" data-magnetic style="--sd:2">
-                <span class="kp-stat-val" data-count="2022">2022</span>
-                <span class="kp-stat-txt">First Published</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="kp-ledger">
+          
+            <div class="kp-ledger">
             <article class="kp-paper" data-magnetic style="--ed:0">
               <span class="kp-node"></span>
               <header class="kp-head">
@@ -591,6 +569,7 @@
                 <span class="kp-cert-date">Nov 2022</span>
               </div>
             </div>
+            </div>
           </div>
         </div>
       </div>
@@ -608,7 +587,7 @@
           <div class="xmit-eyebrow">
             <span class="xmit-eyebrow-num">06</span>
             <span class="xmit-eyebrow-rule"></span>
-            <span class="xmit-eyebrow-label">Transmission</span>
+            <span class="xmit-eyebrow-label">Contact</span>
           </div>
           <div class="xmit-status">
             <span class="xmit-status-dot"></span>
@@ -631,7 +610,7 @@
                  in main.js (this block is re-stamped at boot; JSON-LD above is
                  static and needs a manual edit when the address changes). -->
             <div class="xmit-email-wrap">
-              <button id="copy-email-button" class="xmit-email" data-magnetic data-email="thedataghost8@gmail.com" aria-label="Copy email address thedataghost8@gmail.com">
+              <button id="copy-email-button" class="xmit-email" data-magnetic data-email="vishnuofficial18@gmail.com" aria-label="Copy email address vishnuofficial18@gmail.com">
                 <span class="xmit-email-chars" id="xmit-email-chars">vishnuofficial18@gmail.com</span>
                 <span class="xmit-email-hint">
                   <svg class="xmit-hint-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -678,7 +657,7 @@
             <span>Replay journey</span>
           </button>
           <div class="xmit-credits-meta">
-            <span>Kochi, India · Remote Global</span>
+            <span>Kochi, India</span>
             <span class="xmit-credit-sep"></span>
             <span>© 2026 Vishnu AS</span>
           </div>
@@ -687,6 +666,30 @@
     </div>
 
   </div>
+
+  <!-- Static, crawlable fallback. Hidden when the cinematic app boots; shown
+       when JavaScript is unavailable or the module fails to initialize. -->
+  <section id="fallback-content" class="no-js-main" aria-labelledby="fallback-title">
+    <div class="no-js-inner">
+      <p class="no-js-kicker">Vishnu AS · AI/ML Engineer</p>
+      <h2 id="fallback-title">AI systems that ship.</h2>
+      <p>
+        I build production AI systems across LLM serving, applied research, generative AI,
+        and data science. Based in Kochi, India, and open to frontier AI research and
+        founding engineering roles.
+      </p>
+      <p>
+        This portfolio uses a scroll-driven film. With JavaScript enabled, the full
+        interactive experience loads here. Without it, the essentials are below.
+      </p>
+      <div class="no-js-links">
+        <a href="mailto:vishnuofficial18@gmail.com">vishnuofficial18@gmail.com</a>
+        <a href="https://github.com/vishnuas22" target="_blank" rel="noopener">GitHub</a>
+        <a href="/resume.pdf" download>Résumé (PDF)</a>
+      </div>
+    </div>
+  </section>
+  </main>
 
   <!-- Global FX layer (confetti / celebration bursts) -->
   <div id="fx-layer"></div>
@@ -700,6 +703,17 @@
   </div>
 
   <script type="module" src="/main.js"></script>
+  <script>
+    // Boot watchdog: if the module fails outright (network/hash error), do not
+    // leave a black loader and an invisible page behind. This is intentionally
+    // inline: it must survive a failed module import.
+    window.setTimeout(function () {
+      if (!document.body.classList.contains('is-ready')) {
+        document.documentElement.classList.add('js-failed');
+        document.body.classList.add('is-ready');
+      }
+    }, 9000);
+  </script>
 </body>
 
 </html>

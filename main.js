@@ -6,7 +6,8 @@ import { initGithubAct } from './github.js';
 
 const TOTAL_FRAMES = 472;
 const MAX_CONCURRENT = 12;
-const INITIAL_BUFFER_COUNT = 24;
+const INITIAL_BUFFER_COUNT = 8;
+const HERO_IDLE_AHEAD = 8; // only the first beat is needed before the user scrolls
 // Scoped warm-up + release window: first visits only stream frames near the
 // playhead (not all 472 ≈ 916MB), and far-from-playhead Image references are
 // dropped so a session can't pin the whole film in memory. Eviction band is
@@ -23,9 +24,9 @@ const hero = document.getElementById('hero');
 const scrollWrapper = document.getElementById('scroll-wrapper');
 const loader = document.getElementById('loader');
 const loaderText = document.getElementById('loader-text');
-
-// Safety: if the frame buffer ever stalls, never strand the hero copy invisible.
-setTimeout(() => document.body.classList.add('is-ready'), 5000);
+const actAnnouncer = document.getElementById('act-announcer');
+const navMenuToggle = document.getElementById('nav-menu-toggle');
+const topNavBar = document.querySelector('.top-nav-bar');
 
 // Telemetry DOM elements
 const telemetryFrame = document.getElementById('telemetry-frame');
@@ -128,6 +129,23 @@ let papersAct = null;        // Act 3.5 controller, assigned during init
 let pulseAct = null;         // Act 3.4 controller, assigned during init
 let xpAct = null;            // Act 3 controller, assigned during init
 let lastNavIndex = -1;       // last nav pill index written (aria/current sync)
+
+// Reveal is idempotent: the first frame normally wins, but a slow or failed
+// network must never leave the hero behind a black loader indefinitely.
+function revealSite() {
+  if (isInitialReady) return;
+  isInitialReady = true;
+  document.documentElement.classList.remove('js-failed');
+  document.body.classList.add('is-ready');
+  if (loader) {
+    loader.classList.add('hidden');
+    setTimeout(() => {
+      loader.style.display = 'none';
+    }, 600);
+  }
+}
+
+window.setTimeout(revealSite, 6000);
 
 // Path helper
 function getFramePath(index) {
@@ -360,17 +378,11 @@ function loadSingleFrame(index) {
       drawFrame(0);
     }
 
-    // Hide loader once initial buffer is ready
+    // Reveal as soon as frame 0 can be painted. The remaining warm buffer
+    // continues in the background; waiting for the whole buffer is what made
+    // the loader feel like a wall on slow connections.
     if (!isInitialReady && (loaded[0] || loadedCount >= INITIAL_BUFFER_COUNT)) {
-      isInitialReady = true;
-      // Kick off the hero title-card entrance (Act 0) in sync with the loader
-      document.body.classList.add('is-ready');
-      if (loader) {
-        loader.classList.add('hidden');
-        setTimeout(() => {
-          loader.style.display = 'none';
-        }, 600);
-      }
+      revealSite();
     }
 
     // Redraw if this newly loaded frame is closer to current target
@@ -385,6 +397,8 @@ function loadSingleFrame(index) {
   img.onerror = () => {
     loading[index] = false;
     activeDownloads--;
+    // A broken first frame should not hold the entire site hostage.
+    if (index === 0) setTimeout(revealSite, 800);
     pumpQueue();
   };
 
@@ -393,7 +407,11 @@ function loadSingleFrame(index) {
 
 // Priority queue for scrubbing
 function pumpQueue() {
-  if (activeDownloads >= MAX_CONCURRENT) return;
+  // Keep the first paint light: the hero image is 5.4 MB, so only a small
+  // number of frame requests may compete with it. After the visitor scrolls,
+  // the proven 12-connection warm window resumes.
+  const maxConcurrent = targetProgress < 0.01 ? 4 : MAX_CONCURRENT;
+  if (activeDownloads >= maxConcurrent) return;
 
   const currentIdx = Math.round(currentProgress * (TOTAL_FRAMES - 1));
   const queue = [];
@@ -406,13 +424,24 @@ function pumpQueue() {
     }
   }
 
-  // Priority: playhead forward, then recent backward…
-  for (let i = 0; i <= 40; i++) addToQueue(currentIdx + i);
-  for (let i = 1; i <= 20; i++) addToQueue(currentIdx - i);
-  // …then the rest of the warm window — deliberately NOT the whole film.
-  for (let i = -PREFETCH_BEHIND; i <= PREFETCH_AHEAD; i++) addToQueue(currentIdx + i);
+  // While the title card is on screen, only warm the first beat. The old
+  // unconditional 40-ahead/20-behind sweep downloaded 92 frames (~197 MB)
+  // before the visitor had scrolled once. Once they move, the full warm window
+  // returns exactly as before — frame quality and playback behaviour are
+  // unchanged.
+  const atHero = targetProgress < 0.01;
+  const forwardPriority = atHero ? HERO_IDLE_AHEAD : 40;
+  const backwardPriority = atHero ? 0 : 20;
+  const prefetchAhead = atHero ? HERO_IDLE_AHEAD : PREFETCH_AHEAD;
+  const prefetchBehind = atHero ? 0 : PREFETCH_BEHIND;
 
-  while (activeDownloads < MAX_CONCURRENT && queue.length > 0) {
+  // Priority: playhead forward, then recent backward…
+  for (let i = 0; i <= forwardPriority; i++) addToQueue(currentIdx + i);
+  for (let i = 1; i <= backwardPriority; i++) addToQueue(currentIdx - i);
+  // …then the rest of the warm window — deliberately NOT the whole film.
+  for (let i = -prefetchBehind; i <= prefetchAhead; i++) addToQueue(currentIdx + i);
+
+  while (activeDownloads < maxConcurrent && queue.length > 0) {
     const nextIdx = queue.shift();
     loadSingleFrame(nextIdx);
   }
@@ -561,9 +590,13 @@ function updateNarrativeLayers(progress, targetIndex) {
     const pill = navItemPills[activeNavIndex];
     if (pill) {
       const rail = pill.parentElement;
-      if (rail && rail.scrollWidth > rail.clientWidth + 1) {
+      const isMobileNav = window.matchMedia('(max-width: 900px)').matches;
+      if (!isMobileNav && rail && rail.scrollWidth > rail.clientWidth + 1) {
         const target = pill.offsetLeft - (rail.clientWidth - pill.offsetWidth) / 2;
         rail.scrollTo({ left: Math.max(0, target), behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+      }
+      if (actAnnouncer) {
+        actAnnouncer.textContent = `${pill ? pill.textContent.trim() : phaseName} section`;
       }
     }
   }
@@ -754,6 +787,10 @@ function initGamifiedPlayground() {
     const el = document.createElement('div');
     el.className = 'skill-bead';
     el.style.setProperty('--cat-color', CAT_COLORS[skill.cat].color);
+    el.tabIndex = 0;
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-pressed', String(Boolean(xpState.discovered[skill.name])));
+    el.setAttribute('aria-label', `${skill.name}: ${xpState.discovered[skill.name] ? 'explored' : 'not yet explored'}. Activate to mark as explored.`);
 
     const visual = skill.kind === 'img'
       ? `<img src="/icons/${skill.icon}" alt="" draggable="false" />`
@@ -769,6 +806,18 @@ function initGamifiedPlayground() {
 
     container.appendChild(el);
 
+    // Keyboard parity for the physics beads: Enter/Space masters the skill
+    // without requiring a drag. Focus also pins the name tooltip so the visual
+    // label is available to keyboard and touch users, not just hover.
+    el.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      if (!el.classList.contains('discovered')) discoverSkill(rec);
+      else el.classList.add('show-label');
+    });
+    el.addEventListener('focus', () => el.classList.add('show-label'));
+    el.addEventListener('blur', () => el.classList.remove('show-label'));
+
     const startX = 80 + Math.random() * Math.max(40, width - 160);
     const startY = 60 + Math.random() * Math.max(40, height - 140);
 
@@ -781,7 +830,7 @@ function initGamifiedPlayground() {
 
     Body.setVelocity(body, { x: (Math.random() - 0.5) * 2.4, y: (Math.random() - 0.5) * 2.4 });
 
-    const rec = { skill, el, body, target: null, dragStart: null, dragStartT: 0 };
+    const rec = { skill, el, body, target: null, dragStart: null, dragStartT: 0, labelTimer: 0 };
     if (xpState.discovered[skill.name]) el.classList.add('discovered');
     beads.push(rec);
     World.add(world, body);
@@ -935,7 +984,11 @@ function initGamifiedPlayground() {
       localStorage.setItem(XP_KEY, JSON.stringify(xpState));
     } catch (err) { /* private mode — session-only mastery */ }
 
-    rec.el.classList.add('discovered', 'pop');
+    rec.el.classList.add('discovered', 'pop', 'show-label');
+    rec.el.setAttribute('aria-pressed', 'true');
+    rec.el.setAttribute('aria-label', `${rec.skill.name}: explored.`);
+    clearTimeout(rec.labelTimer);
+    rec.labelTimer = setTimeout(() => rec.el.classList.remove('show-label'), 2200);
     setTimeout(() => rec.el.classList.remove('pop'), 750);
 
     if (isNew && !silent) {
@@ -1083,6 +1136,35 @@ function initGamifiedPlayground() {
 // NAVIGATION & CONTACT INTERACTIONS
 // ==========================================================================
 function initNavPills() {
+  const mobileNavQuery = window.matchMedia('(max-width: 900px)');
+
+  function closeMobileNav({ restoreFocus = false } = {}) {
+    if (!topNavBar?.classList.contains('is-nav-open')) return;
+    topNavBar.classList.remove('is-nav-open');
+    navMenuToggle?.setAttribute('aria-expanded', 'false');
+    navMenuToggle?.setAttribute('aria-label', 'Open navigation');
+    if (restoreFocus) navMenuToggle?.focus();
+  }
+
+  navMenuToggle?.addEventListener('click', () => {
+    const open = topNavBar?.classList.toggle('is-nav-open');
+    navMenuToggle.setAttribute('aria-expanded', String(Boolean(open)));
+    navMenuToggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeMobileNav({ restoreFocus: true });
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!topNavBar?.classList.contains('is-nav-open')) return;
+    if (!topNavBar.contains(event.target)) closeMobileNav();
+  });
+
+  mobileNavQuery.addEventListener('change', (event) => {
+    if (!event.matches) closeMobileNav();
+  });
+
   navItemPills.forEach((pill) => {
     pill.addEventListener('click', () => {
       const targetP = parseFloat(pill.getAttribute('data-target') || '0');
@@ -1092,6 +1174,7 @@ function initNavPills() {
 
       const targetScroll = heroHeight + maxTrackScroll * targetP;
       lenis.scrollTo(targetScroll, { duration: 1.4 });
+      if (mobileNavQuery.matches) closeMobileNav({ restoreFocus: true });
     });
   });
 }
@@ -1099,7 +1182,7 @@ function initNavPills() {
 // ==========================================================================
 // ACT 4: THE HANDSHAKE — TRANSMISSION TERMINAL
 // Real physics (damped-spring magnetic elements, scroll-velocity skew),
-// JS-eased scroll choreography (--act4-p), live Bengaluru clock and a
+// JS-eased scroll choreography (--act4-p), live Kochi clock and a
 // console typewriter. Everything runs only while the act is on screen.
 // ==========================================================================
 // ==========================================================================
@@ -1651,7 +1734,7 @@ function initConnectAct() {
   const CONSOLE_LINES = [
     'initializing handshake… ok',
     'availability: OPEN',
-    'bengaluru, india · remote global',
+    'kochi, india · remote global',
     'local time — ',
     'transmission ready — awaiting yours',
   ];
@@ -1745,7 +1828,7 @@ function initConnectAct() {
 
   buildConsole();
 
-  // ----- Bengaluru clock -----
+  // ----- Kochi clock -----
   function startClock() {
     if (clockTimer) return;
     if (clockSpan) clockSpan.textContent = `${istTime()} IST`;
@@ -2016,15 +2099,12 @@ function scrollToActProgress(p) {
 }
 const reel = initProjectReel({ stage: stageAct25, scrollToProgress: scrollToActProgress });
 
-// Preload sequence
+// Preload sequence: frame 0 is the only blocking image. The rest of the warm
+// buffer is queued by pumpQueue at a low concurrency while the title card is
+// on screen. The letterbox calibration frame is deliberately deferred out of
+// the LCP window; the CSS safe-area defaults hold until it arrives.
 loadSingleFrame(0);
-for (let i = 0; i < INITIAL_BUFFER_COUNT; i++) {
-  loadSingleFrame(i);
-}
-// Letterbox calibration frame — scoped prefetch no longer guarantees the old
-// global sweep ever passed #235 (e.g. nav-pill jumps), so pin its load;
-// evictFarFrames protects it until filmState.calibrated flips.
-loadSingleFrame(CALIBRATION_FRAME);
+setTimeout(() => loadSingleFrame(CALIBRATION_FRAME), 2500);
 
 // Soundscape — scroll-linked score + auto-tour (frame() joins the tick below)
 const soundscape = initSoundscape({ lenis, prefersReducedMotion });

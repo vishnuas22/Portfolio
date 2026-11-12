@@ -120,6 +120,8 @@ export function initGithubAct({ stage, user, getProgress }) {
 
   const statEls = Array.from(stage.querySelectorAll('.pl-stat-val'));
   const heatEl = stage.querySelector('#pl-heat');
+  const heatMonthsEl = stage.querySelector('#pl-heat-months');
+  const heatScroller = stage.querySelector('.pl-heat-scroll');
   const heatTotalEl = stage.querySelector('#pl-heat-total');
   const feedEl = stage.querySelector('#pl-feed');
   const recentEl = stage.querySelector('#pl-recent');
@@ -203,8 +205,15 @@ export function initGithubAct({ stage, user, getProgress }) {
     const frag = document.createDocumentFragment();
     cells = [];
     const firstDow = days.length ? new Date(`${days[0].date}T00:00:00`).getDay() : 0;
+    const weekCount = days.length
+      ? Math.floor((days.length - 1 + firstDow) / 7) + 1
+      : 0;
+    const monthLabels = new Array(weekCount).fill('');
+    const monthFmt = new Intl.DateTimeFormat('en-US', { month: 'short' });
+
     days.forEach((d, i) => {
-      const dow = new Date(`${d.date}T00:00:00`).getDay();
+      const date = new Date(`${d.date}T00:00:00`);
+      const dow = date.getDay();
       const week = Math.floor((i + firstDow) / 7);
       const cell = document.createElement('span');
       cell.className = `pl-cell gh-l${Math.min(4, Math.max(0, d.level || 0))}`;
@@ -213,10 +222,21 @@ export function initGithubAct({ stage, user, getProgress }) {
       cell.style.setProperty('--gc', String(week));
       cell.dataset.date = d.date;
       cell.dataset.count = String(d.count);
+      if (date.getDate() === 1) monthLabels[week] = monthFmt.format(date);
       frag.appendChild(cell);
       cells.push(cell);
     });
+    if (days.length && !monthLabels[0]) {
+      monthLabels[0] = monthFmt.format(new Date(`${days[0].date}T00:00:00`));
+    }
     heatEl.replaceChildren(frag);
+    if (heatMonthsEl) {
+      heatMonthsEl.replaceChildren(...monthLabels.map((label) => {
+        const span = document.createElement('span');
+        span.textContent = label;
+        return span;
+      }));
+    }
   }
 
   function updateHeatmapLevels(days) {
@@ -498,12 +518,30 @@ export function initGithubAct({ stage, user, getProgress }) {
 
   // Phone: the calendar scrolls sideways — park it on the most recent weeks.
   function scrollHeatToNow() {
-    const scroller = stage.querySelector('.pl-heat-scroll');
-    if (scroller && scroller.scrollWidth > scroller.clientWidth) {
-      requestAnimationFrame(() => { scroller.scrollLeft = scroller.scrollWidth; });
+    if (heatScroller && heatScroller.scrollWidth > heatScroller.clientWidth) {
+      requestAnimationFrame(() => { heatScroller.scrollLeft = heatScroller.scrollWidth; });
     }
   }
   window.addEventListener('resize', scrollHeatToNow);
+
+  // The calendar is wider than its viewport on phones. Make the horizontal
+  // overflow operable without a pointer (axe: scrollable-region-focusable).
+  heatScroller?.addEventListener('keydown', (event) => {
+    const step = Math.max(80, Math.round(heatScroller.clientWidth * 0.7));
+    let next = null;
+    if (event.key === 'ArrowRight') next = heatScroller.scrollLeft + step;
+    else if (event.key === 'ArrowLeft') next = heatScroller.scrollLeft - step;
+    else if (event.key === 'PageDown') next = heatScroller.scrollLeft + heatScroller.clientWidth;
+    else if (event.key === 'PageUp') next = heatScroller.scrollLeft - heatScroller.clientWidth;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = heatScroller.scrollWidth;
+    if (next === null) return;
+    event.preventDefault();
+    heatScroller.scrollTo({
+      left: Math.max(0, Math.min(heatScroller.scrollWidth, next)),
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    });
+  });
 
   // ----- boot: snapshot renders immediately (offline-first) -----------------
   collectMagnets();

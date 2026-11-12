@@ -297,6 +297,61 @@ body {
   animation: statusPulse 2.4s ease-in-out infinite;
 }
 
+.status-label {
+  white-space: nowrap;
+}
+
+/* Mobile menu trigger — hidden on desktop, where the pill rail is visible. */
+.nav-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  background: rgba(10, 12, 16, 0.72);
+  color: #ffffff;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: border-color 0.25s var(--ease-google), background 0.25s var(--ease-google);
+}
+
+.nav-menu-toggle:hover,
+.nav-menu-toggle[aria-expanded="true"] {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(24, 27, 35, 0.92);
+}
+
+.nav-menu-icon {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 17px;
+}
+
+.nav-menu-icon i {
+  display: block;
+  height: 2px;
+  width: 100%;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.25s var(--ease-google), opacity 0.2s var(--ease-google);
+}
+
+.nav-menu-toggle[aria-expanded="true"] .nav-menu-icon i:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.nav-menu-toggle[aria-expanded="true"] .nav-menu-icon i:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-menu-toggle[aria-expanded="true"] .nav-menu-icon i:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
 @keyframes statusPulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.45; }
@@ -1424,10 +1479,31 @@ html.js body.is-ready .hero-scroll-cue {
   z-index: 5;
 }
 
-.skill-bead:hover .bead-tip {
+.skill-bead:hover .bead-tip,
+.skill-bead:focus-visible .bead-tip,
+.skill-bead.show-label .bead-tip {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
   transition-delay: 0.08s;
+}
+
+.skill-bead:focus-visible {
+  outline: none;
+}
+
+.skill-bead:focus-visible .bead-core,
+.skill-bead.show-label .bead-core {
+  transform: scale(1.13);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.92),
+    0 0 0 5px rgba(66, 133, 244, 0.55),
+    0 18px 40px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.skill-bead:focus-visible .bead-core::before,
+.skill-bead.show-label .bead-core::before {
+  opacity: 0.4;
 }
 
 /* Category filtering states */
@@ -2744,6 +2820,27 @@ html.js body.is-ready .hero-scroll-cue {
   display: none;
 }
 
+.pl-heat-months {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 10px;
+  gap: 2px;
+  width: max-content;
+  height: 13px;
+  margin-bottom: 3px;
+  font-family: var(--font-head);
+  font-size: 8px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.pl-heat-months span {
+  grid-row: 1;
+  align-self: end;
+}
+
 .pl-heat {
   display: grid;
   grid-template-rows: repeat(7, 10px);
@@ -3681,28 +3778,58 @@ html.js body.is-ready .hero-scroll-cue {
     padding: 0 16px;
   }
 
-  /* compact scrollable pill rail — mobile keeps full navigation */
-  .nav-pill-group {
-    flex: 1 1 auto;
-    min-width: 0;
-    margin: 0 10px;
-    padding: 4px;
-    justify-content: flex-start;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
+  /* Mobile navigation sheet: no horizontal rail, no clipped labels.
+     The same buttons are reused, so active-state and scroll behaviour stay
+     in sync with the desktop nav. */
+  .nav-menu-toggle {
+    display: inline-flex;
   }
 
-  .nav-pill-group::-webkit-scrollbar {
+  .top-nav-bar {
+    gap: 10px;
+  }
+
+  .nav-pill-group {
+    position: fixed;
+    top: max(var(--film-top), 58px);
+    left: 12px;
+    right: 12px;
+    z-index: 120;
     display: none;
+    flex: none;
+    min-width: 0;
+    margin: 0;
+    padding: 8px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    max-height: calc(100vh - max(var(--film-top), 58px) - 16px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 18px;
+    background: rgba(8, 10, 14, 0.97);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.68);
+    scrollbar-width: thin;
+  }
+
+  .top-nav-bar.is-nav-open .nav-pill-group {
+    display: flex;
   }
 
   .nav-item-pill {
-    font-size: 12px;
-    padding: 6px 12px;
-    white-space: nowrap;
+    min-height: 44px;
+    padding: 11px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    text-align: left;
+    white-space: normal;
     flex-shrink: 0;
+  }
+
+  .nav-status {
+    margin-left: auto;
+    gap: 6px;
   }
 
   /* eyebrow rows: status chip yields to the label on narrow screens */
@@ -3909,13 +4036,8 @@ html.js body.is-ready .hero-scroll-cue {
     padding: 6px 9px;
   }
 
-  .nav-pill-group {
-    margin: 0 8px;
-  }
-
   .nav-item-pill {
-    font-size: 11.5px;
-    padding: 5px 10px;
+    padding: 12px 14px;
   }
 
   /* telemetry dock: drop the "Scrub" caption, ellipsis the phase name */
@@ -4639,5 +4761,291 @@ html.js body.is-ready .hero-scroll-cue {
 
   .scene-skills {
     gap: 8px;
+  }
+}
+/* ==========================================================================
+   NO-JS / BOOT-FAILURE FALLBACK
+   The cinematic app is progressive: without JS (or if the module never boots)
+   the loader, canvas, fixed nav and scroll track are removed from the flow and
+   a readable static profile is shown instead.
+   ========================================================================== */
+.no-js-main {
+  display: none;
+  position: relative;
+  z-index: 2;
+  padding: clamp(32px, 8vw, 96px) clamp(20px, 6vw, 72px);
+  background: #000000;
+}
+
+.no-js-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.no-js-kicker {
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--google-green);
+  margin-bottom: 18px;
+}
+
+.no-js-main h2 {
+  font-family: var(--font-head);
+  font-size: clamp(40px, 7vw, 76px);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  margin-bottom: 22px;
+}
+
+.no-js-main p {
+  max-width: 62ch;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.no-js-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin-top: 28px;
+}
+
+.no-js-links a {
+  color: var(--google-blue);
+  font-family: var(--font-head);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(66, 133, 244, 0.4);
+  padding-bottom: 2px;
+}
+
+.no-js-links a:hover {
+  color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+
+html:not(.js) #canvas,
+html:not(.js) #loader,
+html:not(.js) .top-nav-bar,
+html:not(.js) #scroll-wrapper,
+html:not(.js) #narrative-stages,
+html:not(.js) .hero-scroll-cue,
+html:not(.js) .hero-tour-btn,
+html.js-failed #canvas,
+html.js-failed #loader,
+html.js-failed #narrative-stages,
+html.js-failed .hero-scroll-cue,
+html.js-failed .hero-tour-btn {
+  display: none !important;
+}
+
+html:not(.js) .no-js-main,
+html.js-failed .no-js-main {
+  display: block;
+}
+
+html:not(.js) #main-content,
+html.js-failed #main-content {
+  min-height: 0;
+}
+
+html:not(.js) .hero-section,
+html.js-failed .hero-section {
+  min-height: 100svh;
+}
+
+html:not(.js) .skip-link,
+html.js-failed .skip-link {
+  display: none;
+}
+
+/* ==========================================================================
+   PHONE CONTACT FIX — the decorative console yields so the actual contact
+   details, location and credits fit inside the film safe area. The console is
+   aria-hidden decoration; nothing interactive or informative is lost.
+   ========================================================================== */
+@media (max-width: 600px) {
+  .stage-connect {
+    padding-top: 10px;
+    padding-bottom: 8px;
+  }
+
+  .stage-connect .xmit-frame {
+    gap: 10px;
+  }
+
+  .stage-connect .xmit-grid {
+    align-content: start;
+    gap: 12px;
+  }
+
+  .stage-connect .xmit-copy {
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .stage-connect .xmit-headline {
+    font-size: clamp(34px, 10.2vw, 46px);
+    line-height: 1.02;
+  }
+
+  .stage-connect .xmit-email {
+    max-width: 100%;
+  }
+
+  .stage-connect .xmit-email-chars {
+    font-size: clamp(17px, 5.2vw, 23px);
+    overflow-wrap: anywhere;
+  }
+
+  .stage-connect .signal-console {
+    display: none;
+  }
+
+  .stage-connect .xmit-credits {
+    padding-top: 10px;
+    gap: 10px;
+  }
+
+  .stage-connect .xmit-credits-meta {
+    display: flex;
+    gap: 9px;
+    font-size: 10.5px;
+  }
+}
+
+/* ==========================================================================
+   MOBILE PROJECT REEL — the scene is a card, not a clipped horizontal pan.
+   Each scene is pinned to the viewport centre; the project still becomes a
+   full-bleed backdrop with a readable scrim. This eliminates the off-centre
+   title and the cut-off poster at every scroll position on phones.
+   ========================================================================== */
+@media (max-width: 900px) {
+  .reel-track {
+    transform: none !important;
+  }
+
+  .reel-scene {
+    left: 0 !important;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+    transition: opacity 0.32s var(--ease-google);
+  }
+
+  .reel-scene .scene-visual {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.36;
+    pointer-events: none;
+  }
+
+  .reel-scene .still-wrap,
+  .reel-scene .still-tilt,
+  .reel-scene .still-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .reel-scene .still-frame {
+    --bezel: 0px;
+    --frame-r: 0px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .reel-scene .still-frame::before,
+  .reel-scene .still-frame::after,
+  .reel-scene .still-caption,
+  .reel-scene .still-glow {
+    display: none;
+  }
+
+  .reel-scene .still-img,
+  .reel-scene .still-fallback {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    object-fit: cover;
+  }
+
+  .reel-scene .scene-copy {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    padding: clamp(12px, 4vw, 22px) clamp(14px, 4.5vw, 26px);
+    overflow: hidden;
+    background:
+      linear-gradient(90deg, rgba(4, 6, 10, 0.96) 0%, rgba(4, 6, 10, 0.88) 58%, rgba(4, 6, 10, 0.52) 100%);
+    text-shadow: 0 1px 18px rgba(0, 0, 0, 0.55);
+  }
+
+  .reel-scene .scene-blurb {
+    display: block;
+    max-width: 42ch;
+  }
+
+  .reel-scene .scene-highlights {
+    gap: 5px;
+  }
+
+  .reel-scene .scene-skills {
+    gap: 7px;
+    margin-top: 12px;
+  }
+
+  .reel-scene .mini-bead {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+/* Minimum comfortable touch targets on phones. Visual size is preserved
+   where possible; the extra area is transparent padding. */
+@media (max-width: 600px) {
+  .hero-resume-btn,
+  .hero-tour-btn,
+  .sound-toggle,
+  .xmit-btn,
+  .xmit-social {
+    min-height: 44px;
+  }
+
+  .kp-link,
+  .kp-cite {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .reel-arrow {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 900px) {
+  .reel-dot {
+    width: 24px;
+    height: 24px;
+    padding: 8px;
+    background-clip: content-box;
+  }
+
+  .reel-dot.on {
+    transform: scale(1.12);
   }
 }
