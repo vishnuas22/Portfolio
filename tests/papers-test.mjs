@@ -206,18 +206,27 @@ const mobile = await page.evaluate(() => {
   const last = rows[rows.length - 1].getBoundingClientRect();
   const papers = [...stage.querySelectorAll('.kp-paper')];
   const lastPaper = papers[papers.length - 1].getBoundingClientRect();
+  const desc = stage.querySelector('.kp-desc');
+  const descStyle = getComputedStyle(desc);
+  const descRect = desc.getBoundingClientRect();
   return {
     active: stage.classList.contains('stage-active'),
     cols,
     lastCertBottom: last.bottom,
     lastPaperBottom: lastPaper.bottom,
     vh: window.innerHeight,
-    descHidden: getComputedStyle(stage.querySelector('.kp-desc')).display === 'none',
+    descFoldedAccessible: descStyle.display !== 'none'
+      && descStyle.visibility !== 'hidden'
+      && descStyle.position === 'absolute'
+      && descRect.width <= 1 && descRect.height <= 1
+      && descStyle.overflow === 'hidden'
+      && descStyle.clipPath !== 'none'
+      && desc.textContent.trim().length > 0,
   };
 });
 check('mobile act3.5 activates', mobile.active);
 check('mobile grid collapses to single column', mobile.cols === 1, `${mobile.cols} cols`);
-check('mobile intro copy folds away', mobile.descHidden);
+check('mobile intro copy visually folded but accessible', mobile.descFoldedAccessible);
 check('mobile credential rows inside viewport', mobile.lastCertBottom <= mobile.vh && mobile.lastCertBottom > 0, `bottom=${Math.round(mobile.lastCertBottom)}/${mobile.vh}`);
 check('mobile paper cards inside viewport', mobile.lastPaperBottom <= mobile.vh, `bottom=${Math.round(mobile.lastPaperBottom)}/${mobile.vh}`);
 await page.screenshot({ path: `${SHOTS}/16-papers-mobile.png` });

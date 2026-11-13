@@ -182,18 +182,27 @@ const mobile = await page.evaluate(() => {
   const last = rows[rows.length - 1].getBoundingClientRect();
   const bullets = [...stage.querySelectorAll('.xr-bullets li')];
   const lastBullet = bullets[bullets.length - 1].getBoundingClientRect();
+  const desc = stage.querySelector('.xr-desc');
+  const descStyle = getComputedStyle(desc);
+  const descRect = desc.getBoundingClientRect();
   return {
     active: stage.classList.contains('stage-active'),
     cols,
     lastEduBottom: last.bottom,
     lastBulletBottom: lastBullet.bottom,
     vh: window.innerHeight,
-    descHidden: getComputedStyle(stage.querySelector('.xr-desc')).display === 'none',
+    descFoldedAccessible: descStyle.display !== 'none'
+      && descStyle.visibility !== 'hidden'
+      && descStyle.position === 'absolute'
+      && descRect.width <= 1 && descRect.height <= 1
+      && descStyle.overflow === 'hidden'
+      && descStyle.clipPath !== 'none'
+      && desc.textContent.trim().length > 0,
   };
 });
 check('mobile act3 activates', mobile.active);
 check('mobile grid collapses to single column', mobile.cols === 1, `${mobile.cols} cols`);
-check('mobile intro copy folds away', mobile.descHidden);
+check('mobile intro copy visually folded but accessible', mobile.descFoldedAccessible);
 check('mobile education rows inside viewport', mobile.lastEduBottom <= mobile.vh && mobile.lastEduBottom > 0, `bottom=${Math.round(mobile.lastEduBottom)}/${mobile.vh}`);
 check('mobile last bullet inside viewport', mobile.lastBulletBottom <= mobile.vh, `bottom=${Math.round(mobile.lastBulletBottom)}/${mobile.vh}`);
 await page.screenshot({ path: `${SHOTS}/14-xp-mobile.png` });

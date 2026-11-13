@@ -34,6 +34,7 @@ const telemetryPct = document.getElementById('telemetry-pct');
 const telemetryProgressFill = document.getElementById('telemetry-progress-fill');
 const telemetryPhase = document.getElementById('telemetry-phase');
 const navItemPills = document.querySelectorAll('.nav-item-pill');
+const stageViews = [...document.querySelectorAll('.stage-view')];
 
 // --- Contact mailbox — one constant, stamped everywhere at boot -------------
 // When the temporary address is replaced: change this + the static mirrors
@@ -539,6 +540,17 @@ function updateNarrativeLayers(progress, targetIndex) {
   const isAct4 = progress >= 0.97;
   if (stageAct4) stageAct4.classList.toggle('stage-active', isAct4);
   if (connectAct) connectAct.setActive(isAct4);
+
+  // A stage faded out with opacity/visibility is still in the accessibility
+  // tree if a child re-declares visibility (the reel does exactly that for its
+  // active scene). Make the inactive stages inert so their headings, focusable
+  // copy regions, and controls cannot be reached by tab or screen readers.
+  stageViews.forEach((view) => {
+    const on = view.classList.contains('stage-active');
+    view.inert = !on;
+    if (on) view.removeAttribute('aria-hidden');
+    else view.setAttribute('aria-hidden', 'true');
+  });
 
   if (progress < 0.02) {
     phaseName = 'Prologue';
@@ -1150,6 +1162,13 @@ function initNavPills() {
     const open = topNavBar?.classList.toggle('is-nav-open');
     navMenuToggle.setAttribute('aria-expanded', String(Boolean(open)));
     navMenuToggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+    if (open) {
+      // Move keyboard focus into the sheet instead of leaving it on the
+      // trigger, where the next Tab would land on the sound control.
+      const current = topNavBar.querySelector('.nav-item-pill[aria-current="true"]');
+      const first = current || topNavBar.querySelector('.nav-item-pill');
+      requestAnimationFrame(() => first?.focus());
+    }
   });
 
   document.addEventListener('keydown', (event) => {

@@ -84,7 +84,7 @@ const structure = await page.evaluate(() => ({
   magnets: document.querySelectorAll('#stage-act4 [data-magnetic]').length,
   socials: document.querySelectorAll('#stage-act4 .xmit-social').length,
 }));
-check('email split into 23 chars', structure.emailChars === 23, `got ${structure.emailChars}`);
+check('email split into 26 chars', structure.emailChars === 26, `got ${structure.emailChars}`);
 check('console has 5 lines', structure.consoleLines === 5, `got ${structure.consoleLines}`);
 check('headline has 7 words', structure.words === 7, `got ${structure.words}`);
 check('magnetic elements wired (5)', structure.magnets === 5, `got ${structure.magnets}`);
@@ -98,7 +98,7 @@ await page.waitForFunction(
 const probe1 = await page.evaluate(() => window.__connectProbe());
 check('console typewriter completes (5/5 lines)', probe1.typedLines === 5, `got ${probe1.typedLines}`);
 
-// ---------- 4. live Bengaluru clock ----------
+// ---------- 4. live Kochi clock ----------
 const clockA = await page.evaluate(() => window.__connectProbe().clock);
 await sleep(1300);
 const clockB = await page.evaluate(() => window.__connectProbe().clock);
@@ -133,7 +133,7 @@ const copiedState = await page.evaluate(() => ({
   hint: document.querySelector('#copy-email-button .xmit-hint-label').textContent,
   sparks: document.querySelectorAll('#fx-layer .fx-spark').length,
 }));
-check('clipboard contains email', clip === 'thedataghost8@gmail.com', clip);
+check('clipboard contains email', clip === 'vishnuofficial18@gmail.com', clip);
 check('copied state + label morph', copiedState.on && copiedState.hint === 'Copied to clipboard', copiedState.hint);
 check('spark burst on copy', copiedState.sparks > 0, `${copiedState.sparks} sparks`);
 

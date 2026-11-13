@@ -29,9 +29,9 @@ npm test         # terminal 2 — runs every suite + roll-up
 
 Individual suites: `node tests/papers-test.mjs`, `tests/xp-test.mjs`,
 `tests/github-test.mjs`, `tests/reel-test.mjs`, `tests/reel-drill.mjs`,
-`tests/contact-test.mjs`, `tests/act1-baseline.mjs`. Screenshot helpers:
-`tests/papers-shots.mjs`, `tests/xp-shots.mjs`, `tests/github-shots.mjs`
-(shots land in `.reeltest/shots/`).
+`tests/contact-test.mjs`, `tests/audio-test.mjs`, `tests/act1-baseline.mjs`.
+Screenshot helpers: `tests/papers-shots.mjs`, `tests/xp-shots.mjs`,
+`tests/github-shots.mjs` (shots land in `.reeltest/shots/`).
 
 ## The acts
 
@@ -53,10 +53,12 @@ Individual suites: `node tests/papers-test.mjs`, `tests/xp-test.mjs`,
 - **`style.css`** — design system (Google Sans, Google palette), letterbox
   safe-area layout via runtime `--film-top/--film-bottom` vars, per-act
   choreography CSS, reduced-motion blocks, responsive breakpoints (900px/600px).
-- **`main.js`** — film engine: frame loader (12 concurrent, 24-frame initial
-  buffer, LCP-prioritized frame 1), Lenis smooth scroll, letterbox calibration,
-  act gating + telemetry sync, physics controllers for acts 1–4 (magnets,
-  tilt springs, count-ups, spotlight, sparks).
+- **`main.js`** — film engine: frame loader (frame 0 reveals the site, then an
+  8-frame hero idle buffer; 12 concurrent connections and the wider prefetch
+  window after first scroll), Lenis smooth scroll, letterbox calibration,
+  act gating + telemetry sync, inert inactive stages, mobile navigation sheet,
+  frame-load watchdog/no-JS fallback, and physics controllers for acts 1–4
+  (magnets, tilt springs, count-ups, spotlight, sparks).
 - **`projects.js`** — reel data + scene builder + drag/keyboard navigation.
   `tests/projects.baseline.js` is its pristine snapshot (used by the drill test).
 - **`github.js`** — Act 3.4 controller: one-shot count-ups, contribution heatmap,
@@ -71,15 +73,38 @@ Individual suites: `node tests/papers-test.mjs`, `tests/xp-test.mjs`,
 
 `public/frames/frame_0001.webp … frame_0472.webp` — 4K, full quality by design
 (≈916 MB total). They are intentionally **not** compressed, resized, or
-downgraded; quality is the product. Keep Vite's copy-as-is behavior.
+downgraded; quality is the product. Keep Vite's copy-as-is behavior. Frame
+loading is windowed and evicts distant `Image` references from memory, but the
+4K files themselves stay untouched.
 
-## Accessibility
+### Deployment
 
-- Skip link, global `:focus-visible` ring, `aria-current` nav state.
-- Inactive acts are `visibility: hidden` — out of tab order and AT tree.
+`vercel.json` sets a restrictive CSP (self-hosted assets, the two GitHub
+endpoints, inline styles/scripts required by the cinematic boot), HSTS,
+`nosniff`, frame denial, a referrer policy, and a permissions policy. 4K
+frames, fonts, icons, audio, and project posters use long-lived immutable
+caches; `/hero/` and `/images/` revalidate after a week; `resume.pdf` is
+revalidated hourly so a replacement appears without a deploy. Canonical,
+`og:url`, sitemap, and the absolute `og:image` are intentionally deferred until
+the production domain is final.
+
+## Accessibility & resilience
+
+- One `<main>` landmark and one `<h1>`; a skip link targets the main landmark.
+- Inactive acts are inert and `aria-hidden`; only the current act's controls
+  and copy regions enter the tab order or accessibility tree.
+- Mobile navigation is a disclosure sheet with `aria-expanded`/`aria-controls`,
+  44px targets, focus moved into the sheet on open, and focus restored to the
+  trigger on Escape or selection.
+- Project cards are labeled regions; the heatmap is a focusable region with
+  arrow/Page/Home/End scrolling, month labels, and a screen-reader summary.
+  Skill beads are keyboard/touch buttons with `aria-pressed` discovery state.
+- A screen-reader act announcer and `aria-current` keep navigation in sync.
+- Copy interactions and the email button announce through `aria-live` labels.
 - `prefers-reduced-motion`: smooth-scroll, physics impulses, staggers, springs,
-  and stage drift all collapse to instant state changes.
-- Copy interactions announce through `aria-live` labels.
+  auto-tour, and stage drift collapse to instant state changes.
+- If JavaScript fails or the frame loader stalls, a static, crawlable fallback
+  appears with the hero, résumé link, email, GitHub, and section summaries.
 
 ## Commands cheat-sheet
 

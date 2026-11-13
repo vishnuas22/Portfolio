@@ -288,13 +288,13 @@ check('desktop calendar needs no horizontal scroll', desktopFit.heatOverflow <= 
 
 // ---------- 10. nav pill jump lands in the act ----------
 await jumpTo(p, 0.5);
-await p.evaluate(() => [...document.querySelectorAll('.nav-item-pill')].find((b) => b.textContent === 'Pulse').click());
+await p.evaluate(() => [...document.querySelectorAll('.nav-item-pill')].find((b) => b.textContent === 'GitHub').click());
 // lenis glides for 1.4s, then currentProgress lerps — poll instead of guessing
 const pillLanded = await p.waitForFunction(
   () => document.getElementById('stage-act34').classList.contains('stage-active'),
   { timeout: 7000, polling: 150 }
 ).then(() => true).catch(() => false);
-check('"Pulse" nav pill lands inside the act', pillLanded);
+check('"GitHub" nav pill lands inside the act', pillLanded);
 
 // ---------- 11. mobile 390px ----------
 await p.setViewport({ width: 390, height: 844 });
@@ -311,18 +311,27 @@ const mobile = await p.evaluate(() => {
   const chips = [...stage.querySelectorAll('.pl-chip')];
   const lastChip = chips[chips.length - 1].getBoundingClientRect();
   const heat = stage.querySelector('.pl-heat-scroll');
+  const desc = stage.querySelector('.pl-desc');
+  const descStyle = getComputedStyle(desc);
+  const descRect = desc.getBoundingClientRect();
   return {
     active: stage.classList.contains('stage-active'),
     cols, visibleRows, totalRows,
     lastChipBottom: lastChip.bottom,
     vh: window.innerHeight,
     heatScrolled: heat.scrollLeft > 0,
-    descHidden: getComputedStyle(stage.querySelector('.pl-desc')).display === 'none',
+    descFoldedAccessible: descStyle.display !== 'none'
+      && descStyle.visibility !== 'hidden'
+      && descStyle.position === 'absolute'
+      && descRect.width <= 1 && descRect.height <= 1
+      && descStyle.overflow === 'hidden'
+      && descStyle.clipPath !== 'none'
+      && desc.textContent.trim().length > 0,
   };
 });
 check('mobile act3.4 activates', mobile.active);
 check('mobile grid collapses to single column', mobile.cols === 1, `${mobile.cols} cols`);
-check('mobile intro copy folds away', mobile.descHidden);
+check('mobile intro copy visually folded but accessible', mobile.descFoldedAccessible);
 check('mobile feed capped at 5 rows', mobile.visibleRows === Math.min(5, mobile.totalRows), `${mobile.visibleRows}/${mobile.totalRows}`);
 check('mobile calendar auto-scrolled to recent weeks', mobile.heatScrolled);
 check('mobile chips inside viewport', mobile.lastChipBottom <= mobile.vh && mobile.lastChipBottom > 0, `bottom=${Math.round(mobile.lastChipBottom)}/${mobile.vh}`);

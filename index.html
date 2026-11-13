@@ -72,7 +72,7 @@
     <nav id="primary-nav" class="nav-pill-group" aria-label="Primary">
       <button class="nav-item-pill active" type="button" data-target="0.08" aria-current="true">Systems</button>
       <button class="nav-item-pill" type="button" data-target="0.32">Technical Expertise</button>
-      <button class="nav-item-pill" type="button" data-target="0.49">Projects</button>
+      <button class="nav-item-pill" type="button" data-target="0.48">Projects</button>
       <button class="nav-item-pill" type="button" data-target="0.915">Experience</button>
       <button class="nav-item-pill" type="button" data-target="0.935">GitHub</button>
       <button class="nav-item-pill" type="button" data-target="0.955">Knowledge</button>
@@ -93,6 +93,26 @@
       </button>
     </div>
   </header>
+
+  <!-- Bottom Letterbox Margin: Live Telemetry Dock (decorative readout) -->
+  <aside class="bottom-telemetry-bar" aria-hidden="true">
+    <div class="telemetry-pill">
+      <span class="rec-indicator"></span>
+      <span id="telemetry-frame">Frame 001 / 472</span>
+    </div>
+
+    <div class="telemetry-pill scrub-pill">
+      <span class="telemetry-title">Scrub</span>
+      <div class="telemetry-bar-track">
+        <div id="telemetry-progress-fill" class="telemetry-bar-fill"></div>
+      </div>
+      <span id="telemetry-pct">0%</span>
+    </div>
+
+    <div class="telemetry-pill phase-pill">
+      <span id="telemetry-phase">Prologue</span>
+    </div>
+  </aside>
 
   <main id="main-content" tabindex="-1">
   <div id="act-announcer" class="sr-only" role="status" aria-live="polite"></div>
@@ -525,8 +545,24 @@
               Research published and credentials earned — the artifacts behind the practice,
               cited and verifiable.
             </p>
-          
-            <div class="kp-ledger">
+
+            <div class="kp-stats">
+              <div class="kp-stat" data-magnetic style="--sd:0">
+                <span class="kp-stat-val" data-count="2" data-pad="2">02</span>
+                <span class="kp-stat-txt">Publications</span>
+              </div>
+              <div class="kp-stat" data-magnetic style="--sd:1">
+                <span class="kp-stat-val" data-count="2" data-pad="2">02</span>
+                <span class="kp-stat-txt">Certifications</span>
+              </div>
+              <div class="kp-stat" data-magnetic style="--sd:2">
+                <span class="kp-stat-val" data-count="2022">2022</span>
+                <span class="kp-stat-txt">First Published</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="kp-ledger">
             <article class="kp-paper" data-magnetic style="--ed:0">
               <span class="kp-node"></span>
               <header class="kp-head">
@@ -568,7 +604,6 @@
                 <span class="kp-cert-id">NPTEL22CS122S5490238</span>
                 <span class="kp-cert-date">Nov 2022</span>
               </div>
-            </div>
             </div>
           </div>
         </div>

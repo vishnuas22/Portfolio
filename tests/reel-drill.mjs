@@ -12,13 +12,16 @@ const REEL = { start: 0.48, end: 0.86 };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // --- always start from a pristine, single-dose state ---
-let original = fs.readFileSync(BASELINE, 'utf8');
-fs.writeFileSync(FILE, original);
-if (fs.readFileSync(FILE, 'utf8').split('drilltest').length - 1 !== 0) {
+// Preserve the actual working tree file so local app changes survive the
+// drill. The baseline is only the fixture used to build the 7th-project test.
+const working = fs.readFileSync(FILE, 'utf8')
+  .replace(/,\n  \{\n    id: 'drilltest'[\s\S]*?\n  \}/, '');
+let baseline = fs.readFileSync(BASELINE, 'utf8');
+if (baseline.split('drilltest').length - 1 !== 0) {
   // baseline itself was polluted — hard reset
-  original = original.replace(/,\n  \{\n    id: 'drilltest'[\s\S]*?\n  \}/, '');
-  fs.writeFileSync(FILE, original);
+  baseline = baseline.replace(/,\n  \{\n    id: 'drilltest'[\s\S]*?\n  \}/, '');
 }
+fs.writeFileSync(FILE, baseline);
 console.log(`[drill pid=${process.pid}] file doses:`, fs.readFileSync(FILE, 'utf8').split('drilltest').length - 1);
 
 const seventh = `
@@ -39,7 +42,7 @@ const seventh = `
     image: 'missing-photo.png',
   }`;
 
-fs.writeFileSync(FILE, original.replace('];\n\nfunction skillChip', seventh + '\n];\n\nfunction skillChip'));
+fs.writeFileSync(FILE, baseline.replace('];\n\nfunction skillChip', seventh + '\n];\n\nfunction skillChip'));
 
 const results = [];
 const check = (name, ok, extra = '') => {
@@ -130,7 +133,7 @@ try {
   results.push(false);
 } finally {
   if (browser) await browser.close();
-  fs.writeFileSync(FILE, original); // restore real data
+  fs.writeFileSync(FILE, working); // restore real working-tree data
   console.log('projects.js restored to the 6 real projects');
 }
 const fails = results.filter((r) => !r).length;

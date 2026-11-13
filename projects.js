@@ -251,6 +251,13 @@ export function initProjectReel({ stage, scrollToProgress }) {
         </div>
       </div>`;
 
+    const copy = el.querySelector('.scene-copy');
+    if (copy) {
+      copy.tabIndex = 0;
+      copy.setAttribute('role', 'region');
+      copy.setAttribute('aria-label', `${p.title} project details`);
+    }
+
     track.appendChild(el);
     return { el, tiltEl: el.querySelector('.still-tilt'), stillWrap: el.querySelector('.still-wrap') };
   });
@@ -394,6 +401,9 @@ export function initProjectReel({ stage, scrollToProgress }) {
 
   track.addEventListener('pointerdown', (e) => {
     if (e.button !== 0 || !active) return;
+    // On phones the card copy is the scroll surface. Let vertical touch
+    // scrolling reach the browser; navigation stays on the 44px arrows/dots.
+    if (mobileReelQuery.matches) return;
     pointerId = e.pointerId;
     startX = lastX = e.clientX;
     lastT = performance.now();
